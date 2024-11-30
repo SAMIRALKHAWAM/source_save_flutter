@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:source_safe/screen/regester/login.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'cubits/regester/cubit.dart';
+import 'network/bloc_observer.dart';
+import 'network/dio_helper.dart';
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  Bloc.observer=MyBlocObserver();
+  DioHelper.init();
+  runApp( MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -11,14 +19,22 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (BuildContext context) =>registerCubit()),
 
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+      
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home:Login(),
       ),
-      home:Login(),
     );
   }
 }
