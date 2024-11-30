@@ -4,6 +4,7 @@ import 'package:source_safe/screen/regester/register.dart';
 
 import '../../cubits/regester/cubit.dart';
 import '../../cubits/regester/state.dart';
+import '../../network/cash_helper.dart';
 import '../app/HomeScreen.dart';
 
 
@@ -28,6 +29,8 @@ class _LoginState extends State<Login> {
       listener: (BuildContext context, registerSates state) {
 
         if (state is LoginSuccessState){
+
+          CachHelper.saveData(key: "token", value: registerCubit.get(context).loginmodel.data.token);
 
           Navigator.push(
             context,
