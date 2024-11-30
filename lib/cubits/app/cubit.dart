@@ -8,7 +8,7 @@ import '../../network/dio_helper.dart';
 class AppCubit extends Cubit<AppSates> {
   AppCubit() : super(AppInitialState());
   static AppCubit get(context) => BlocProvider.of(context);
- late GetUser getUser;
+  GetUser? getUser;
   /////Get Users
 void getUsers(){
   emit(LoadingState());

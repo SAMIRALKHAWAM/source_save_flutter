@@ -199,67 +199,85 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (BuildContext context) {
         filteredMembers.length==0?filteredMembers=allMembers:filteredMembers=filteredMembers;
-        return AlertDialog(
-          title: Text("create group "),
-          content: Container(
-            width: double.maxFinite,
-            child:   AppCubit.get(context).getUser==null?CircularProgressIndicator():
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: searchController,
-                  decoration: InputDecoration(
-                    labelText: "serch member",
-                    prefixIcon: Icon(Icons.search),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      searchController.text.isNotEmpty?
-                      serch_member(value):
-                      filteredMembers=allMembers;
-                    });
-                  },
-                ),
-                SizedBox(height: 10),
+        return  BlocConsumer<AppCubit,AppSates>(
+          listener: (BuildContext context, AppSates state) {  },
+          builder: (BuildContext context, AppSates state) {
+            return AppCubit.get(context).getUser!=null?
+              AlertDialog(
+                title: Text("create group "),
+                content: Container(
+                  width: double.maxFinite,
+                  child:   AppCubit.get(context).getUser==null?CircularProgressIndicator():
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          labelText: "serch member",
+                          prefixIcon: Icon(Icons.search),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            searchController.text.isNotEmpty?
+                            serch_member(value):
+                            filteredMembers=allMembers;
+                          });
+                        },
+                      ),
+                      SizedBox(height: 10),
 
-                AppCubit.get(context).getUser!=null?
-                Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: AppCubit.get(context).getUser!.data!.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(AppCubit.get(context).getUser.data![index].name.toString()),
-                        onTap: () {},
-                      );
-                    },
+
+                      Expanded(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: AppCubit.get(context).getUser!.data!.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Text(AppCubit.get(context).getUser!.data![index].name.toString()),
+                              onTap: () {},
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ):CircularProgressIndicator(),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("cancel"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _showNameGroupDialog(context);
+                      // String groupName = groupNameController.text;
+                      // String members = membersController.text;
+                      // // هنا يمكنك إضافة الكود لمعالجة البيانات المدخلة
+                      // print("اسم المجموعة: $groupName");
+                      // print("أسماء الأعضاء: $members");
+                      // Navigator.of(context).pop();
+                    },
+                    child: Text(" Next "),
+                  ),
+                ],
+              ):AlertDialog(
+              title: Text("Create Group"),
+              content: Center(child: CircularProgressIndicator()), // عرض دائرة التحميل
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Cancel"),
+                ),
               ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _showNameGroupDialog(context);
-                // String groupName = groupNameController.text;
-                // String members = membersController.text;
-                // // هنا يمكنك إضافة الكود لمعالجة البيانات المدخلة
-                // print("اسم المجموعة: $groupName");
-                // print("أسماء الأعضاء: $members");
-                // Navigator.of(context).pop();
-              },
-              child: Text(" Next "),
-            ),
-          ],
+            );
+          },
+
         );
       },
     );
