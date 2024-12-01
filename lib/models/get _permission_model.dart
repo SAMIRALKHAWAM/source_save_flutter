@@ -1,19 +1,19 @@
-class GetUser {
+class GetPremmetion {
   bool? success;
   String? message;
   int? code;
-  List<DataUser>? data;
+  List<Data>? data;
 
-  GetUser({this.success, this.message, this.code, this.data});
+  GetPremmetion({this.success, this.message, this.code, this.data});
 
-  GetUser.fromJson(Map<String, dynamic> json) {
+  GetPremmetion.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
     code = json['code'];
     if (json['data'] != null) {
-      data = <DataUser>[];
+      data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(new DataUser.fromJson(v));
+        data!.add(new Data.fromJson(v));
       });
     }
   }
@@ -30,27 +30,21 @@ class GetUser {
   }
 }
 
-class DataUser {
+class Data {
   int? id;
   String? name;
-  String? email;
-  String? emailVerifiedAt;
 
-  DataUser({this.id, this.name, this.email, this.emailVerifiedAt});
+  Data({this.id, this.name});
 
-  DataUser.fromJson(Map<String, dynamic> json) {
+  Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
-    email = json['email'];
-    emailVerifiedAt = json['email_verified_at'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['name'] = this.name;
-    data['email'] = this.email;
-    data['email_verified_at'] = this.emailVerifiedAt;
     return data;
   }
 }

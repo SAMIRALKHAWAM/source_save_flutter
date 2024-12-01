@@ -31,7 +31,7 @@ class _LoginState extends State<Login> {
 
         if (state is LoginSuccessState){
 
-          CachHelper.saveData(key: "token", value: registerCubit.get(context).loginmodel.data.token);
+          CachHelper.saveData(key: "token", value: registerCubit.get(context).loginmodel.data.token.toString());
           token=CachHelper.getData(key: "token");
           Navigator.push(
             context,

@@ -8,20 +8,25 @@ import 'cubits/regester/cubit.dart';
 import 'network/bloc_observer.dart';
 import 'network/cash_helper.dart';
 import 'network/dio_helper.dart';
+import 'network/end_point.dart';
 
 void main() async{
+  Widget startwidget;
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer=MyBlocObserver();
   DioHelper.init();
   await CachHelper.init();
-  runApp( MyApp());
+  token=CachHelper.getData(key: "token");
+  token !=null?startwidget=HomeScreen():startwidget=Login();
+  runApp( MyApp(startwidget: startwidget,));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+   MyApp({required this.startwidget});
+   Widget startwidget;
 
 
-  @override
+   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
@@ -38,7 +43,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home:Login(),
+        home:startwidget,
       ),
     );
   }

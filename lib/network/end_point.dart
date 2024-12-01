@@ -1,7 +1,9 @@
 
-const String baseurl='http://192.168.100.1:8000/user_api';
+const String baseurl='http://192.168.1.104:8000/user_api';
 String token="";
 
-String Login='/login';
+String login='/login';
 String register='/register';
 String get_users='/get_users';
+String premmetion='/get_permissions';
+String addgroup='/add_group';

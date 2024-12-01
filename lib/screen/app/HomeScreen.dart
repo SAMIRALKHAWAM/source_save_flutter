@@ -12,16 +12,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final List<String> groups = ['Group A', 'Group B', 'Group C', 'Group D'];
-
+  List<int?> userIds = [];
+  List<int> perIds = [];
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isLargeScreen = screenWidth >= 800;
+    AppCubit.get(context).get_permissions();
+
 
     return BlocConsumer<AppCubit,AppSates>(
       listener: (BuildContext context, AppSates state) {  },
       builder: (BuildContext context, AppSates state){
-        return Scaffold(
+
+        return
+          AppCubit.get(context).getpermissions!=null?
+          Scaffold(
           appBar: AppBar(
             title: Text('File Manager'),
             backgroundColor: Colors.blue[800],
@@ -114,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             },
           ),
-        );
+        ):Center(child: CircularProgressIndicator(),);
       },
 
     );
@@ -198,16 +204,16 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        filteredMembers.length==0?filteredMembers=allMembers:filteredMembers=filteredMembers;
         return  BlocConsumer<AppCubit,AppSates>(
           listener: (BuildContext context, AppSates state) {  },
           builder: (BuildContext context, AppSates state) {
-            return AppCubit.get(context).getUser!=null?
+            return
+              AppCubit.get(context).getUsersearch!=null?
               AlertDialog(
                 title: Text("create group "),
                 content: Container(
                   width: double.maxFinite,
-                  child:   AppCubit.get(context).getUser==null?CircularProgressIndicator():
+                  child:
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -219,9 +225,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         onChanged: (value) {
                           setState(() {
-                            searchController.text.isNotEmpty?
-                            serch_member(value):
-                            filteredMembers=allMembers;
+
+                            AppCubit.get(context).serch_name(value);
+
+
                           });
                         },
                       ),
@@ -231,11 +238,36 @@ class _HomeScreenState extends State<HomeScreen> {
                       Expanded(
                         child: ListView.builder(
                           shrinkWrap: true,
-                          itemCount: AppCubit.get(context).getUser!.data!.length,
+                          itemCount: AppCubit.get(context).searchResults!.length,
                           itemBuilder: (context, index) {
+                            int? userId = AppCubit.get(context).searchResults![index].id;
+
+
                             return ListTile(
-                              title: Text(AppCubit.get(context).getUser!.data![index].name.toString()),
-                              onTap: () {},
+                              title: Container(
+                                padding: EdgeInsets.only(left: 5.0,right: 5,top: 5), // لإضافة مسافة حول النص
+                            decoration: BoxDecoration(
+                            color:userIds.contains(userId) ?  Color(0x80A8E6A0) : Colors.white38, // لون الخلفية الأحمر
+                            borderRadius: BorderRadius.circular(8.0),),
+                                child: Text(AppCubit.get(context).searchResults![index].name.toString(),
+
+                                  style: TextStyle(
+                                    // color: userIds.contains(userId) ? Colors.green : Colors.black, // تغيير اللون هنا
+                                  ),
+                                ),
+                              ),
+                              onTap: () {
+                                // userIds.add(AppCubit.get(context).getUsersearch![index].id);
+
+                                setState(() {
+                                  // إضافة الـ id إلى مصفوفة userIds إذا لم يكن موجودًا بالفعل
+                                  if (!userIds.contains(userId)) {
+                                    userIds.add(userId); // إضافة الـ userId إلى المصفوفة
+                                  }
+                                  else userIds.remove(userId);
+                                });
+
+                              },
                             );
                           },
                         ),
@@ -289,39 +321,37 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("create group"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: "name",
-                  prefixIcon: Icon(Icons.search),
+        return BlocConsumer<AppCubit,AppSates>(
+          listener: (BuildContext context, AppSates state) {  },
+          builder: (BuildContext context, AppSates state) { return   AlertDialog(
+            title: Text("create group"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: "name",
+                    prefixIcon: Icon(Icons.search),
+                  ),
                 ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("cancel"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  AppCubit.get(context).add_group(name: nameController.text, userId: userIds, perId: [1,2,3]);},
+                child: Text(" Done "),
               ),
             ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // String groupName = groupNameController.text;
-                // String members = membersController.text;
-                // // هنا يمكنك إضافة الكود لمعالجة البيانات المدخلة
-                // print("اسم المجموعة: $groupName");
-                // print("أسماء الأعضاء: $members");
-                // Navigator.of(context).pop();
-              },
-              child: Text(" Done "),
-            ),
-          ],
+          ); },
+
         );
       },
     );

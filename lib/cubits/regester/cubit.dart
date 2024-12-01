@@ -37,7 +37,7 @@ class registerCubit extends Cubit<registerSates> {
     required password,
   }) {
     emit(LoginLoadingState());
-    DioHelper.postData(url: baseurl + Login, data: {
+    DioHelper.postData(url: baseurl + login, data: {
       'email': email,
       'password': password,
     }).then((value) {
