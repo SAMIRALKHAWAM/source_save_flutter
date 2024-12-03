@@ -1,9 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:source_safe/cubits/app/state.dart';
 import '../../../network/end_point.dart';
 import '../../models/get _permission_model.dart';
 import '../../models/get_user_model.dart';
-import '../../models/login_model.dart';
+
 import '../../network/dio_helper.dart';
 
 class AppCubit extends Cubit<AppSates> {
@@ -65,8 +66,32 @@ void getUsers(){
     });
 
   }
+///////////////////////////////////////////  add_file
+  void add_file({
+    required String fileName,
+    required List<int> fileBytes
+
+  }){
+    FormData formData = FormData.fromMap({
+      'file': MultipartFile.fromBytes(fileBytes, filename: fileName),
+    });
+
+    emit(LoadingState());
+    DioHelper.postData(url: baseurl+addfile,data: {
 
 
+    }).then((value){
+      print(value.data);
+      emit(add_fileSuccessState());
+    }).catchError((error) {
+      print(error.toString());
+      emit(add_fileErrorState());
+    });
+
+  }
+
+
+///////////////////////////////////////////  search
   List<DataUser> searchResults = [];
 
   Future<void> serch_name (dynamic name)async{

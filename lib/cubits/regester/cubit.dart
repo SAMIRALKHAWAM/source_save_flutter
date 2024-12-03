@@ -49,4 +49,73 @@ class registerCubit extends Cubit<registerSates> {
       emit(LoginErrorState());
     });
   }
+
+
+///////////////////////////////////////////  resend_otp
+
+
+  void resend_otp({
+    required String email,
+  }){
+    emit(ForgetLoadingState());
+    DioHelper.postData(
+        url: baseurl+resendotp,
+        data: {
+          'email':email,
+        }
+    ).then((value) {
+      print(value.data);
+      emit(ForgetSuccessState());
+    }).catchError((error){
+      print(error.toString());
+      emit(ForgetErrorState());
+    });
+  }
+///////////////////////////////////////////  verify_account
+
+
+  void verify_account({
+    required String code,
+    required String email,
+  }){
+    emit(CodeLoadingState());
+    DioHelper.postData(
+        url: baseurl+verifyaccount,
+        data:{
+          "email": email,
+          "code": code}
+    ).then((value){
+      emit(CodeSuccessState());
+    }).catchError((error){
+      emit(CodeErrorState());
+      print(error.toString());
+
+    });
+  }
+
+
+
+  void resetpassword({
+    required String code,
+    required String email,
+    required String password,
+    required String c_password,
+  }){
+    emit(ResetLoadingState());
+    DioHelper.postData(
+        url: baseurl+"/password/reset",
+        data:{
+          "email":email,
+          "code": code,
+          "password": password,
+          "c_password":c_password
+        }
+    ).then((value){
+      emit(ResetSuccessState());
+    }).catchError((error){
+      emit(ResetErrorState());
+      print(error.toString());
+
+    });
+  }
 }

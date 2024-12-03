@@ -13,6 +13,9 @@ class get_permissionsErrorState extends AppSates{}
 class add_groupSuccessState extends AppSates{}
 class add_groupErrorState extends AppSates{}
 
+class add_fileSuccessState extends AppSates{}
+class add_fileErrorState extends AppSates{}
+
 
 class SerchState extends AppSates {}
 class SerchSuccessState extends AppSates {

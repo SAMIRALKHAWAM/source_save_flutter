@@ -7,6 +7,7 @@ import '../../cubits/regester/state.dart';
 import '../../network/cash_helper.dart';
 import '../../network/end_point.dart';
 import '../app/HomeScreen.dart';
+import 'forget.dart';
 
 
 class Login extends StatefulWidget {
@@ -150,7 +151,14 @@ class _LoginState extends State<Login> {
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () {
-                            // Navigate to forget password screen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ForgetPassword()
+                              ),
+                            );
+
                             print('Navigate to Forget Password');
                           },
                           child: Text(

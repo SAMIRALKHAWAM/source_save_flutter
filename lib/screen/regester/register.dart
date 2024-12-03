@@ -82,7 +82,7 @@ class _RegisterWebState extends State<RegisterWeb> {
                           color: Colors.grey[600],
                         ),
                       ),
-                      SizedBox(height: 30),
+                      SizedBox(height: 20),
 
 
                       TextFormField(
@@ -124,7 +124,6 @@ class _RegisterWebState extends State<RegisterWeb> {
                       //     return null;
                       //   },
                       // ),
-                      SizedBox(height: 20),
 
 
                       TextFormField(
@@ -181,6 +180,8 @@ class _RegisterWebState extends State<RegisterWeb> {
                           return null;
                         },
                       ),
+                      SizedBox(height: 20),
+
                       TextFormField(
                         controller: c_passwordController,
                         obscureText: _isPasswordObscured,
