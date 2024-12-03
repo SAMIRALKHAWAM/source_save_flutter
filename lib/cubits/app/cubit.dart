@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:source_safe/cubits/app/state.dart';
 import '../../../network/end_point.dart';
 import '../../models/get _permission_model.dart';
+import '../../models/get_groups_model.dart';
 import '../../models/get_user_model.dart';
 
 import '../../network/dio_helper.dart';
@@ -119,6 +120,22 @@ void getUsers(){
       print(searchResults.length);
     }
 
+  }
+
+  GetGroupsModel? get_group;
+  void get_groups(){
+
+    emit(LoadingState());
+    DioHelper.getData(url: baseurl+getgroups,
+
+    ).then((value){
+      emit(get_groupsSuccessState());
+      get_group = GetGroupsModel.fromJson(value.data);
+      print(value.data);
+    }).catchError((error) {
+      print(error.toString());
+      emit(get_groupsErrorState());
+    });
   }
 
 

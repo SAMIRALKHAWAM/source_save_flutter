@@ -8,6 +8,8 @@ String get_users='/get_users';
 String premmetion='/get_permissions';
 String addgroup='/add_group';
 String addfile="/add_file";
+String logout='/logout';
+String  getgroups="/get_groups";
 
 String resendotp="/presend_otp";
 String verifyaccount="/verify_account";

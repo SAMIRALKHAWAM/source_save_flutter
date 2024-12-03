@@ -118,4 +118,20 @@ class registerCubit extends Cubit<registerSates> {
 
     });
   }
+
+  ////////////////////////logout
+  void log_out() {
+    emit(LogoutSuccessState());
+    DioHelper.postData(
+      url: baseurl + logout,
+    ).then((value) {
+      print(value.data);
+      print("logout succsess");
+      emit(LogoutSuccessState());
+    }).catchError((error) {
+      print(error.toString());
+      emit(LogoutErrorState());
+    });
+  }
+
 }
