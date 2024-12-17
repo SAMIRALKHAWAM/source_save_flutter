@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:source_safe/screen/regester/reset.dart';
 
 import '../../cubits/regester/cubit.dart';
 import '../../cubits/regester/state.dart';
@@ -14,8 +15,17 @@ class Code extends StatelessWidget {
   Widget build(BuildContext context) {
     final isWeb = MediaQuery.of(context).size.width > 600;
 
-    return BlocConsumer<registerCubit,registerSates>(
-      listener: (BuildContext context, registerSates state) {  },
+    return BlocConsumer<registerCubit, registerSates>(
+      listener: (BuildContext context, registerSates state) {
+        if (state is CodeSuccessState) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    ResetPassword(email: email, code: codeController.text)),
+          );
+        }
+      },
       builder: (BuildContext context, registerSates state) {
         return Scaffold(
           body: Center(
@@ -25,7 +35,8 @@ class Code extends StatelessWidget {
                 child: Container(
                   margin: EdgeInsets.symmetric(
                     vertical: 20,
-                    horizontal: isWeb ? MediaQuery.of(context).size.width * 0.3 : 20,
+                    horizontal:
+                        isWeb ? MediaQuery.of(context).size.width * 0.3 : 20,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -63,8 +74,8 @@ class Code extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () {
                             if (formKey.currentState!.validate()) {
-                              registerCubit.get(context).verify_account(code: codeController.text, email: email);
-
+                              registerCubit.get(context).verify_account(
+                                  code: codeController.text, email: email);
                             }
                           },
                           child: Text(
@@ -80,7 +91,6 @@ class Code extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 15),
-
                       Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -116,7 +126,6 @@ class Code extends StatelessWidget {
           ),
         );
       },
-
     );
   }
 

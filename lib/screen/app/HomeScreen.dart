@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:source_safe/cubits/app/state.dart';
+import 'package:source_safe/network/cash_helper.dart';
+import 'package:source_safe/network/end_point.dart';
 
 import '../../cubits/app/cubit.dart';
 import '../../cubits/regester/cubit.dart';
 import '../../cubits/regester/state.dart';
 import '../regester/login.dart';
 import 'GroupDetailes.dart';
+import 'drawer.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -14,7 +17,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<String> groups = ['Group A', 'Group B', 'Group C', 'Group D'];
   List<int?> userIds = [];
   List<int> perIds = [];
   @override
@@ -24,202 +26,146 @@ class _HomeScreenState extends State<HomeScreen> {
     AppCubit.get(context).get_permissions();
     AppCubit.get(context).get_groups();
 
-    final drawerContent = ListView(
-      children: [
-        DrawerHeader(
-          decoration: BoxDecoration(
-            color: Colors.blue[800],
-          ),
-          child: Text(
-            'Menu',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-            ),
-          ),
-        ),
-        ListTile(
-          leading: Icon(Icons.home),
-          title: Text(
-            'Home',
-            style: TextStyle(
-              color: Colors.white,
-            ),
-          ),
-          onTap: () {},
-        ),
-        ListTile(
-          leading: Icon(Icons.settings),
-          title: Text(
-            'Settings',
-            style: TextStyle(
-              color: Colors.white,
-            ),
-          ),
-          onTap: () {},
-        ),
-        BlocConsumer<registerCubit, registerSates>(
-          listener: (BuildContext context, registerSates state) {
-            if (state is LogoutSuccessState) {
-              print("we are going to login screen");
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Login()),
-              );
-            }
-          },
-          builder: (BuildContext context, registerSates state) {
-            return ListTile(
-              leading: Icon(Icons.logout),
-              title: Text(
-                'Logout',
-                style: TextStyle(
-                  color: Colors.white,
+    final drawerContent = Drawer_App();
+
+    return BlocConsumer<AppCubit, AppSates>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        return AppCubit.get(context).get_group == null
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Scaffold(
+                appBar: AppBar(
+                  title: Text('File Manager'),
+                  backgroundColor: Colors.blue[800],
+                  centerTitle: true,
                 ),
-              ),
-              onTap: () {
-                registerCubit.get(context).log_out();
-              },
-            );
-          },
-        ),
-      ],
-    );
+                body: Row(
+                  children: [
+                    if (isLargeScreen)
+                      Container(
+                        color: Colors.blue[800],
+                        width: 250,
+                        child: drawerContent,
+                      ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Groups",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue[800],
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            Expanded(
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  int crossAxisCount = 1;
 
-    return AppCubit.get(context).get_group == null
-        ? Center(
-            child: CircularProgressIndicator(),
-          )
-        : Scaffold(
-            appBar: AppBar(
-              title: Text('File Manager'),
-              backgroundColor: Colors.blue[800],
-              centerTitle: true,
-            ),
-            body: Row(
-              children: [
-                if (isLargeScreen)
-                  Container(
-                    color: Colors.blue[800],
-                    width: 250,
-                    child: drawerContent,
-                  ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Groups",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue[800],
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        Expanded(
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              int crossAxisCount = 1;
+                                  if (constraints.maxWidth >= 1200) {
+                                    crossAxisCount = 4;
+                                  } else if (constraints.maxWidth >= 800) {
+                                    crossAxisCount = 3;
+                                  } else if (constraints.maxWidth >= 600) {
+                                    crossAxisCount = 2;
+                                  }
 
-                              if (constraints.maxWidth >= 1200) {
-                                crossAxisCount = 4;
-                              } else if (constraints.maxWidth >= 800) {
-                                crossAxisCount = 3;
-                              } else if (constraints.maxWidth >= 600) {
-                                crossAxisCount = 2;
-                              }
-
-                              return GridView.builder(
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: crossAxisCount,
-                                  crossAxisSpacing: 16,
-                                  mainAxisSpacing: 16,
-                                  childAspectRatio: 4,
-                                ),
-                                itemCount: AppCubit.get(context)
-                                    .get_group!
-                                    .data
-                                    .length,
-                                itemBuilder: (context, index) {
-                                  return Card(
-                                    elevation: 4,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                  return GridView.builder(
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: crossAxisCount,
+                                      crossAxisSpacing: 16,
+                                      mainAxisSpacing: 16,
+                                      // childAspectRatio: 4,
                                     ),
-                                    child: ListTile(
-                                      title: Text(
-                                        AppCubit.get(context)
-                                            .get_group!
-                                            .data[index]
-                                            .name,
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
+                                    itemCount: AppCubit.get(context)
+                                        .get_group!
+                                        .data
+                                        .length,
+                                    itemBuilder: (context, index) {
+                                      return Card(
+                                        elevation: 4,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                         ),
-                                      ),
-                                      trailing: Icon(
-                                        Icons.arrow_forward_ios,
-                                        color: Colors.blue[800],
-                                        size: 18,
-                                      ),
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                GroupDetailsScreen(
-                                              groupName: groups[index],
-                                              isAdmin: true,
+                                        child: ListTile(
+                                          title: Text(
+                                            AppCubit.get(context)
+                                                .get_group!
+                                                .data[index]
+                                                .name,
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w500,
                                             ),
                                           ),
-                                        );
-                                      },
-                                    ),
+                                          trailing: Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: Colors.blue[800],
+                                            size: 18,
+                                          ),
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    GroupDetailsScreen(
+                                                  groupName:
+                                                      AppCubit.get(context)
+                                                          .get_group!
+                                                          .data[index]
+                                                          .name,
+                                                  isAdmin: true,
+                                                  groupId: AppCubit.get(context)
+                                                      .get_group!
+                                                      .data[index]
+                                                      .id,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    },
                                   );
                                 },
-                              );
-                            },
-                          ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-            drawer: isLargeScreen
-                ? null
-                : Drawer(
-                    child: drawerContent,
-                  ),
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: Colors.blue[800],
-              child: Icon(Icons.group_add_rounded),
-              onPressed: () {
-                _showCreateGroupDialog(context);
-                AppCubit.get(context).getUsers();
-              },
-            ),
-          );
+                drawer: isLargeScreen
+                    ? null
+                    : Drawer(
+                        child: drawerContent,
+                      ),
+                floatingActionButton: FloatingActionButton(
+                  backgroundColor: Colors.blue[800],
+                  child: Icon(Icons.group_add_rounded),
+                  onPressed: () {
+                    _showCreateGroupDialog(context);
+                    AppCubit.get(context).getUsers();
+                  },
+                ),
+              );
+      },
+    );
   }
 
   void _showCreateGroupDialog(BuildContext context) {
     final TextEditingController searchController = TextEditingController();
-
-    List<String> allMembers = [
-      'محمد',
-      'أحمد',
-      'فاطمة',
-      'سارة',
-      'يوسف',
-      'علي',
-      'sara'
-    ];
-    List<String> filteredMembers = [];
+    userIds.clear();
 
     showDialog(
       context: context,
@@ -247,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               });
                             },
                           ),
-                          SizedBox(height: 10),
+                          SizedBox(height: 8),
                           Expanded(
                             child: ListView.builder(
                               shrinkWrap: true,
@@ -260,25 +206,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                 return ListTile(
                                   title: Container(
-                                    padding: EdgeInsets.only(
-                                        left: 5.0,
-                                        right: 5,
-                                        top: 5), // لإضافة مسافة حول النص
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 15),
                                     decoration: BoxDecoration(
                                       color: userIds.contains(userId)
                                           ? Color(0x80A8E6A0)
-                                          : Colors
-                                              .white38, // لون الخلفية الأحمر
-                                      borderRadius: BorderRadius.circular(8.0),
+                                          : Colors.white38,
+                                      borderRadius: BorderRadius.only(
+                                        bottomRight: Radius.circular(12),
+                                        topRight: Radius.circular(12),
+                                      ),
                                     ),
                                     child: Text(
                                       AppCubit.get(context)
                                           .searchResults![index]
                                           .name
                                           .toString(),
-                                      style: TextStyle(
-                                          // color: userIds.contains(userId) ? Colors.green : Colors.black, // تغيير اللون هنا
-                                          ),
+                                      style: TextStyle(),
                                     ),
                                   ),
                                   onTap: () {
@@ -325,8 +269,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 : AlertDialog(
                     title: Text("Create Group"),
                     content: Center(
-                        child:
-                            CircularProgressIndicator()), // عرض دائرة التحميل
+                      child: CircularProgressIndicator(),
+                    ),
                     actions: [
                       TextButton(
                         onPressed: () {

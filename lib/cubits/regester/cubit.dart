@@ -87,39 +87,39 @@ class registerCubit extends Cubit<registerSates> {
     ).then((value){
       emit(CodeSuccessState());
     }).catchError((error){
-      emit(CodeErrorState());
       print(error.toString());
+      emit(CodeErrorState());
 
     });
   }
 
-
+///////////////////////////////////////////  resetpassword
 
   void resetpassword({
-    required String code,
+    required  code,
     required String email,
     required String password,
     required String c_password,
   }){
     emit(ResetLoadingState());
     DioHelper.postData(
-        url: baseurl+"/password/reset",
+        url: baseurl+reset_password,
         data:{
           "email":email,
           "code": code,
           "password": password,
-          "c_password":c_password
+          "password_confirmation":c_password
         }
     ).then((value){
       emit(ResetSuccessState());
     }).catchError((error){
-      emit(ResetErrorState());
       print(error.toString());
+      emit(ResetErrorState());
 
     });
   }
 
-  ////////////////////////logout
+  ////////////////////////  logout
   void log_out() {
     emit(LogoutSuccessState());
     DioHelper.postData(

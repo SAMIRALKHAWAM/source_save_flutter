@@ -23,8 +23,10 @@ class _ResetPasswordState extends State<ResetPassword> {
   Widget build(BuildContext context) {
     final isWeb = MediaQuery.of(context).size.width > 600;
 
-    return BlocConsumer<registerCubit,registerSates>(
-      listener: (BuildContext context, registerSates state) {  },
+    return BlocConsumer<registerCubit, registerSates>(
+      listener: (BuildContext context, registerSates state) {
+
+      },
       builder: (BuildContext context, registerSates state) {
         return Scaffold(
           body: Center(
@@ -34,7 +36,8 @@ class _ResetPasswordState extends State<ResetPassword> {
                 child: Container(
                   padding: EdgeInsets.symmetric(
                     vertical: 20,
-                    horizontal: isWeb ? MediaQuery.of(context).size.width * 0.2 : 20,
+                    horizontal:
+                        isWeb ? MediaQuery.of(context).size.width * 0.2 : 20,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -59,9 +62,11 @@ class _ResetPasswordState extends State<ResetPassword> {
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 30),
-                      _buildPasswordField(passwordController, 'Password', isWeb),
+                      _buildPasswordField(
+                          passwordController, 'Password', isWeb),
                       SizedBox(height: 20),
-                      _buildPasswordField(confirmPasswordController, 'Confirm Password', isWeb),
+                      _buildPasswordField(
+                          confirmPasswordController, 'Confirm Password', isWeb),
                       SizedBox(height: 30),
                       SizedBox(
                         width: double.infinity,
@@ -69,7 +74,11 @@ class _ResetPasswordState extends State<ResetPassword> {
                         child: ElevatedButton(
                           onPressed: () {
                             if (formKey.currentState!.validate()) {
-
+                              registerCubit.get(context).resetpassword(
+                                  code: widget.code,
+                                  email:  widget.email,
+                                  password: passwordController.text,
+                                  c_password: confirmPasswordController.text);
                             }
                           },
                           child: Text(
@@ -91,13 +100,12 @@ class _ResetPasswordState extends State<ResetPassword> {
             ),
           ),
         );
-
       },
-
     );
   }
 
-  Widget _buildPasswordField(TextEditingController controller, String label, bool isWeb) {
+  Widget _buildPasswordField(
+      TextEditingController controller, String label, bool isWeb) {
     return TextFormField(
       controller: controller,
       obscureText: _isPasswordObscured,
