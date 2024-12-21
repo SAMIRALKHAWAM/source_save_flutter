@@ -16,7 +16,7 @@ void main() async{
   Bloc.observer=MyBlocObserver();
   DioHelper.init();
   await CachHelper.init();
-  // token=CachHelper.getData(key: "token");
+  token=CachHelper.getData(key: "token");
   token !=null?startwidget=HomeScreen():startwidget=Login();
   runApp( MyApp(startwidget: startwidget,));
 }

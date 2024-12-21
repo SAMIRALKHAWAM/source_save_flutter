@@ -11,11 +11,12 @@ import '../../cubits/app/state.dart';
 
 class GroupDetailsScreen extends StatefulWidget {
   final String groupName;
-  final  groupId;
+  final groupId;
 
   final bool isAdmin;
 
-  GroupDetailsScreen({required this.groupName,required this.groupId, this.isAdmin = true});
+  GroupDetailsScreen(
+      {required this.groupName, required this.groupId, this.isAdmin = true});
 
   @override
   State<GroupDetailsScreen> createState() => _GroupDetailsScreenState();
@@ -30,7 +31,6 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
     'Member 3',
     'Member 4',
   ];
-
 
   Future<void> pickFiles(BuildContext context) async {
     try {
@@ -47,11 +47,13 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
             final bytes = file.bytes!;
             setState(() {
               groupsFiles.add({'name': fileName, 'bytes': bytes});
-
             });
-            AppCubit.get(context).add_file(fileName: fileName, fileBytes: bytes, id:7);
+            AppCubit.get(context).add_file(
+                fileName: fileName, fileBytes: bytes, id: widget.groupId);
 
             print('File selected: $fileName');
+            print(file.size);
+
           }
         }
       }
@@ -61,8 +63,6 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
       print('Error: $e');
     }
   }
-
-
 
   void downloadFile(String fileName, List<int> bytes) {
     final blob = html.Blob([bytes], 'application/pdf');
@@ -79,150 +79,234 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    AppCubit.get(context).get_file_accepted(id_group:widget.groupId );
+    AppCubit.get(context).get_file_accepted(id_group: widget.groupId);
     return BlocConsumer<AppCubit, AppSates>(
-      listener: (BuildContext context, AppSates state) {  },
+      listener: (BuildContext context, AppSates state) {},
       builder: (BuildContext context, AppSates state) {
-        return
-          AppCubit.get(context).get_file!=null?
-
-          DefaultTabController(
-          length: 2,
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text(widget.groupName),
-              backgroundColor: Colors.blueAccent,
-              centerTitle: true,
-              bottom: TabBar(
-                tabs: [
-                  Tab(text: 'Files'),
-                  Tab(text: 'Members'),
-                ],
-              ),
-            ),
-            body: TabBarView(
-              children: [
-                // Tab 1: Files
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
+        return AppCubit.get(context).get_file != null
+            ? DefaultTabController(
+                length: 2,
+                child: Scaffold(
+                  appBar: AppBar(
+                    title: Text(widget.groupName),
+                    backgroundColor: Colors.blueAccent,
+                    centerTitle: true,
+                    bottom: TabBar(
+                      tabs: [
+                        Tab(text: 'Files'),
+                        Tab(text: 'Members'),
+                      ],
+                    ),
+                  ),
+                  body: TabBarView(
                     children: [
-                      ElevatedButton(
-                        onPressed: () => pickFiles(context),
-                        child: Text('Upload PDFs'),
-                      ),
-                      SizedBox(height: 16),
-                      Expanded(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            int crossAxisCount = 1;
+                      // Tab 1: Files
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () => pickFiles(context),
+                              child: Text('Upload PDFs'),
+                            ),
+                            SizedBox(height: 16),
+                            Expanded(
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  int crossAxisCount = 1;
 
-                            if (constraints.maxWidth >= 1200) {
-                              crossAxisCount = 4;
-                            } else if (constraints.maxWidth >= 800) {
-                              crossAxisCount = 3;
-                            } else if (constraints.maxWidth >= 600) {
-                              crossAxisCount = 2;
-                            }
+                                  if (constraints.maxWidth >= 1200) {
+                                    crossAxisCount = 4;
+                                  } else if (constraints.maxWidth >= 800) {
+                                    crossAxisCount = 3;
+                                  } else if (constraints.maxWidth >= 600) {
+                                    crossAxisCount = 2;
+                                  }
 
-                            return GridView.builder(
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: crossAxisCount,
-                                crossAxisSpacing: 16,
-                                mainAxisSpacing: 16,
-                                childAspectRatio: 3,
-                              ),
-                              itemCount: AppCubit.get(context).get_file!.data.original.data.length,
-                              itemBuilder: (context, index) {
-                                return Card(
-                                  elevation: 4,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: ListTile(
-                                    title: Text(
-                                      AppCubit.get(context).get_file!.data.original.data[index].name,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.blueAccent.shade700,
-                                      ),
+                                  return GridView.builder(
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: crossAxisCount,
+                                      crossAxisSpacing: 16,
+                                      mainAxisSpacing: 16,
+                                      childAspectRatio: 3,
                                     ),
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        IconButton(
-                                          icon: Icon(Icons.download, color: Colors.blueAccent),
-                                          onPressed: () {
-                                            downloadFile(
-                                              groupsFiles[index]['name'],
-                                              groupsFiles[index]['bytes'],
-                                            );
-                                          },
+                                    itemCount: AppCubit.get(context)
+                                        .get_file!
+                                        .data
+                                        .original
+                                        .data
+                                        .length,
+                                    itemBuilder: (context, index) {
+                                      return Card(
+                                        elevation: 4,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                         ),
-                                        IconButton(
-                                          icon: Icon(Icons.bookmark, color: Colors.blueAccent),
-                                          onPressed: () {
-                                            print('Reserving ${groupsFiles[index]['name']}');
-                                          },
-                                        ),
-                                        if (widget.isAdmin)
-                                          IconButton(
-                                            icon: Icon(Icons.delete, color: Colors.redAccent),
-                                            onPressed: () {
-                                              setState(() {
-
-                                                groupsFiles.removeAt(index);
-                                              });
-                                              print('Deleted file: ${groupsFiles.isNotEmpty ? groupsFiles[index]['name'] : 'No Files Left'}');
-                                            },
-                                          ),
-
-                                      ],
-                                    ),
-                                    onTap: () {
-                                      final fileName =  AppCubit.get(context).get_file!.data.original.data[index].url;
-                                      final fileBytes = groupsFiles[index]['bytes'];
-
-
-
-                                      if (fileName.endsWith('.pdf')) {
-
-                                        print('Opening file: $fileName');
-                                        final url = html.Url.createObjectUrlFromBlob(
-                                          html.Blob([fileBytes], 'application/pdf'),
-                                        );
-                                        html.window.open(url, '_blank');
-                                        html.Url.revokeObjectUrl(url);
-                                      }
-                                      else
-                                        if (fileName.endsWith('.csv')) {
-
-                                        print('Opening CSV file: $fileName');
-                                        final csvContent = utf8.decode(fileBytes);
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) => AlertDialog(
-                                            title: Text('CSV Content'),
-                                            content: SingleChildScrollView(
-                                              child: Text(csvContent),
+                                        child: ListTile(
+                                          title: Text(
+                                            AppCubit.get(context)
+                                                .get_file!
+                                                .data
+                                                .original
+                                                .data[index]
+                                                .name,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.blueAccent.shade700,
                                             ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () => Navigator.of(context).pop(),
-                                                child: Text('Close'),
+                                          ),
+                                          trailing: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              IconButton(
+                                                icon: Icon(Icons.download,
+                                                    color: Colors.blueAccent),
+                                                onPressed: () {
+                                                  downloadFile(
+                                                    groupsFiles[index]['name'],
+                                                    groupsFiles[index]['bytes'],
+                                                  );
+                                                },
                                               ),
+                                              IconButton(
+                                                icon: Icon(Icons.bookmark,
+                                                    color: Colors.blueAccent),
+                                                onPressed: () {
+                                                  print(
+                                                      'Reserving ${groupsFiles[index]['name']}');
+                                                },
+                                              ),
+                                              if (widget.isAdmin)
+                                                IconButton(
+                                                  icon: Icon(Icons.delete,
+                                                      color: Colors.redAccent),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      groupsFiles
+                                                          .removeAt(index);
+                                                    });
+                                                    print(
+                                                        'Deleted file: ${groupsFiles.isNotEmpty ? groupsFiles[index]['name'] : 'No Files Left'}');
+                                                  },
+                                                ),
                                             ],
                                           ),
-                                        );
-                                      } else {
-                                        print('Unknown file type: $fileName');
-                                     }
-                                    },
+                                          onTap: () {
+                                            final fileName =
+                                                AppCubit.get(context)
+                                                    .get_file!
+                                                    .data
+                                                    .original
+                                                    .data[index]
+                                                    .url;
+                                            final fileBytes =
+                                                groupsFiles[index]['bytes'];
+                                            // final fileUrl =
+                                            //     AppCubit.get(context)
+                                            //         .get_file!
+                                            //         .data
+                                            //         .original
+                                            //         .data[index]
+                                            //         .url;
+                                            //
+                                            // if (fileUrl != null) {
+                                            //   // إذا كان الملف يحتوي على URL، افتحه في نافذة جديدة
+                                            //   html.window
+                                            //       .open(fileUrl, '_blank');
+                                            //   print(
+                                            //       'Opening file from URL: $fileName');
+                                            // }
+                                            // print('oopps');
 
+                                            //
+                                             if (fileName.endsWith('.pdf')) {
+
+                                               print('Opening file: $fileName');
+                                               final url = html.Url.createObjectUrlFromBlob(
+                                                 html.Blob([fileBytes], 'application/pdf'),
+                                               );
+                                               html.window.open(url, '_blank');
+                                               html.Url.revokeObjectUrl(url);
+                                             }
+                                             else
+                                               if (fileName.endsWith('.csv')) {
+
+                                               print('Opening CSV file: $fileName');
+                                               final csvContent = utf8.decode(fileBytes);
+                                               showDialog(
+                                                 context: context,
+                                                 builder: (context) => AlertDialog(
+                                                   title: Text('CSV Content'),
+                                                   content: SingleChildScrollView(
+                                                     child: Text(csvContent),
+                                                   ),
+                                                   actions: [
+                                                     TextButton(
+                                                       onPressed: () => Navigator.of(context).pop(),
+                                                       child: Text('Close'),
+                                                     ),
+                                                   ],
+                                                 ),
+                                               );
+                                             } else {
+                                               print('Unknown file type: $fileName');
+                                            }
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Tab 2: Members
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: ListView.builder(
+                          itemCount: groupMembers.length,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: ListTile(
+                                title: Text(
+                                  groupMembers[index],
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.blueAccent.shade700,
                                   ),
-                                );
-                              },
+                                ),
+                                leading: CircleAvatar(
+                                  child: Text(
+                                    groupMembers[index][0],
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  backgroundColor: Colors.blueAccent,
+                                ),
+                                trailing: widget.isAdmin
+                                    ? IconButton(
+                                        icon: Icon(Icons.remove_circle,
+                                            color: Colors.redAccent),
+                                        onPressed: () {
+                                          setState(() {
+                                            groupMembers.removeAt(index);
+                                          });
+                                          print(
+                                              'Removed member: ${groupMembers[index]}');
+                                        },
+                                      )
+                                    : null,
+                              ),
                             );
                           },
                         ),
@@ -230,57 +314,11 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                     ],
                   ),
                 ),
-
-                // Tab 2: Members
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ListView.builder(
-                    itemCount: groupMembers.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: ListTile(
-                          title: Text(
-                            groupMembers[index],
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.blueAccent.shade700,
-                            ),
-                          ),
-                          leading: CircleAvatar(
-                            child: Text(
-                              groupMembers[index][0],
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            backgroundColor: Colors.blueAccent,
-                          ),
-                          trailing: widget.isAdmin
-                              ? IconButton(
-                            icon: Icon(Icons.remove_circle, color: Colors.redAccent),
-                            onPressed: () {
-                              setState(() {
-                                groupMembers.removeAt(index);
-                              });
-                              print('Removed member: ${groupMembers[index]}');
-                            },
-                          )
-                              : null,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ):
-              Center(child: CircularProgressIndicator(),);
+              )
+            : Center(
+                child: CircularProgressIndicator(),
+              );
       },
-
     );
   }
 }
