@@ -1,6 +1,6 @@
 abstract class adminSates{}
 class LoginInitialState extends adminSates{}
+class LoadingState extends adminSates{}
 
-class LoginLoadingState extends adminSates{}
-class LoginSuccessState extends adminSates{}
-class LoginErrorState extends adminSates{}
+class get_groupsSuccessState extends adminSates{}
+class get_groupsErrorState extends adminSates{}

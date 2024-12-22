@@ -53,7 +53,6 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
 
             print('File selected: $fileName');
             print(file.size);
-
           }
         }
       }
@@ -64,16 +63,23 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
     }
   }
 
-  void downloadFile(String fileName, List<int> bytes) {
-    final blob = html.Blob([bytes], 'application/pdf');
-    final url = html.Url.createObjectUrlFromBlob(blob);
+  void downloadFile(String fileUrl, String fileName) {
+    try {
+      // تأكد من أن URL صالح
+      if (fileUrl.isEmpty || fileName.isEmpty) {
+        print("URL or filename is invalid");
+        return;
+      }
 
-    final anchor = html.AnchorElement(href: url)
-      ..setAttribute('download', fileName)
-      ..click();
+      // إنشاء رابط تحميل جديد
+      final anchor = html.AnchorElement(href: fileUrl)
+        ..download = fileName // تعيين اسم الملف
+        ..click(); // محاكاة النقر لتحميل الملف
 
-    html.Url.revokeObjectUrl(url);
-    print('Downloading $fileName');
+      print('Downloading file from URL: $fileUrl');
+    } catch (e) {
+      print('Failed to download file: $e');
+    }
   }
 
   @override
@@ -165,11 +171,48 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                                 icon: Icon(Icons.download,
                                                     color: Colors.blueAccent),
                                                 onPressed: () {
-                                                  downloadFile(
-                                                    groupsFiles[index]['name'],
-                                                    groupsFiles[index]['bytes'],
-                                                  );
-                                                },
+
+
+
+
+
+
+                                                  final fileUrl =
+                                                      "http://localhost:8000" +
+                                                          AppCubit.get(context)
+                                                              .get_file!
+                                                              .data
+                                                              .original
+                                                              .data[index]
+                                                              .url;
+                                                 final fileName= AppCubit.get(context)
+                                                      .get_file!
+                                                      .data
+                                                      .original
+                                                      .data[index]
+                                                      .name;
+
+        try {
+        // تأكد من أن URL صالح
+        if (fileUrl.isEmpty || fileName.isEmpty) {
+        print("URL or filename is invalid");
+        return;
+        }
+
+        // إنشاء رابط تحميل جديد
+        final anchor = html.AnchorElement(href: fileUrl)
+        ..download = fileName // تعيين اسم الملف
+        ..click(); // محاكاة النقر لتحميل الملف
+
+        print('Downloading file from URL: $fileUrl');
+        } catch (e) {
+        print('Failed to download file: $e');
+        }
+        }
+
+
+
+
                                               ),
                                               IconButton(
                                                 icon: Icon(Icons.bookmark,
@@ -195,65 +238,21 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                             ],
                                           ),
                                           onTap: () {
-                                            final fileName =
-                                                AppCubit.get(context)
-                                                    .get_file!
-                                                    .data
-                                                    .original
-                                                    .data[index]
-                                                    .url;
-                                            final fileBytes =
-                                                groupsFiles[index]['bytes'];
-                                            // final fileUrl =
-                                            //     AppCubit.get(context)
-                                            //         .get_file!
-                                            //         .data
-                                            //         .original
-                                            //         .data[index]
-                                            //         .url;
-                                            //
-                                            // if (fileUrl != null) {
-                                            //   // إذا كان الملف يحتوي على URL، افتحه في نافذة جديدة
-                                            //   html.window
-                                            //       .open(fileUrl, '_blank');
-                                            //   print(
-                                            //       'Opening file from URL: $fileName');
-                                            // }
-                                            // print('oopps');
+                                            final fileUrl =
+                                                "http://localhost:8000" +
+                                                    AppCubit.get(context)
+                                                        .get_file!
+                                                        .data
+                                                        .original
+                                                        .data[index]
+                                                        .url;
 
-                                            //
-                                             if (fileName.endsWith('.pdf')) {
-
-                                               print('Opening file: $fileName');
-                                               final url = html.Url.createObjectUrlFromBlob(
-                                                 html.Blob([fileBytes], 'application/pdf'),
-                                               );
-                                               html.window.open(url, '_blank');
-                                               html.Url.revokeObjectUrl(url);
-                                             }
-                                             else
-                                               if (fileName.endsWith('.csv')) {
-
-                                               print('Opening CSV file: $fileName');
-                                               final csvContent = utf8.decode(fileBytes);
-                                               showDialog(
-                                                 context: context,
-                                                 builder: (context) => AlertDialog(
-                                                   title: Text('CSV Content'),
-                                                   content: SingleChildScrollView(
-                                                     child: Text(csvContent),
-                                                   ),
-                                                   actions: [
-                                                     TextButton(
-                                                       onPressed: () => Navigator.of(context).pop(),
-                                                       child: Text('Close'),
-                                                     ),
-                                                   ],
-                                                 ),
-                                               );
-                                             } else {
-                                               print('Unknown file type: $fileName');
+                                            if (fileUrl != null) {
+                                              // إذا كان الملف يحتوي على URL، افتحه في نافذة جديدة
+                                              html.window
+                                                  .open(fileUrl, '_blank');
                                             }
+                                            print('oopps');
                                           },
                                         ),
                                       );
