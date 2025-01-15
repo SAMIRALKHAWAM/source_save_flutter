@@ -1,9 +1,18 @@
+// To parse this JSON data, do
+//
+//     final getFileModel = getFileModelFromJson(jsonString);
+
+import 'dart:convert';
+
+GetFileModel getFileModelFromJson(String str) => GetFileModel.fromJson(json.decode(str));
+
+String getFileModelToJson(GetFileModel data) => json.encode(data.toJson());
 
 class GetFileModel {
   bool success;
   String message;
   int code;
-  Data data;
+  List<Datum> data;
 
   GetFileModel({
     required this.success,
@@ -13,68 +22,6 @@ class GetFileModel {
   });
 
   factory GetFileModel.fromJson(Map<String, dynamic> json) => GetFileModel(
-    success: json["success"],
-    message: json["message"],
-    code: json["code"],
-    data: Data.fromJson(json["data"]),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "success": success,
-    "message": message,
-    "code": code,
-    "data": data.toJson(),
-  };
-}
-
-class Data {
-  Headers headers;
-  Original original;
-  dynamic exception;
-
-  Data({
-    required this.headers,
-    required this.original,
-    required this.exception,
-  });
-
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-    headers: Headers.fromJson(json["headers"]),
-    original: Original.fromJson(json["original"]),
-    exception: json["exception"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "headers": headers.toJson(),
-    "original": original.toJson(),
-    "exception": exception,
-  };
-}
-
-class Headers {
-  Headers();
-
-  factory Headers.fromJson(Map<String, dynamic> json) => Headers(
-  );
-
-  Map<String, dynamic> toJson() => {
-  };
-}
-
-class Original {
-  bool success;
-  String message;
-  int code;
-  List<Datum> data;
-
-  Original({
-    required this.success,
-    required this.message,
-    required this.code,
-    required this.data,
-  });
-
-  factory Original.fromJson(Map<String, dynamic> json) => Original(
     success: json["success"],
     message: json["message"],
     code: json["code"],
@@ -98,9 +45,11 @@ class Datum {
   String url;
   int availability;
   String status;
-  dynamic reservedBy;
+  int? reservedBy;
+  DateTime createdAt;
   int userId;
   String userName;
+  int color;
 
   Datum({
     required this.id,
@@ -112,8 +61,10 @@ class Datum {
     required this.availability,
     required this.status,
     required this.reservedBy,
+    required this.createdAt,
     required this.userId,
     required this.userName,
+    required this.color,
   });
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
@@ -126,8 +77,10 @@ class Datum {
     availability: json["availability"],
     status: json["status"],
     reservedBy: json["reserved_by"],
+    createdAt: DateTime.parse(json["created_at"]),
     userId: json["user_id"],
     userName: json["user_name"],
+    color: json["color"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -140,7 +93,9 @@ class Datum {
     "availability": availability,
     "status": status,
     "reserved_by": reservedBy,
+    "created_at": createdAt.toIso8601String(),
     "user_id": userId,
     "user_name": userName,
+    "color": color,
   };
 }

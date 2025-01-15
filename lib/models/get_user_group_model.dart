@@ -1,18 +1,27 @@
+// To parse this JSON data, do
+//
+//     final getUserGroup = getUserGroupFromJson(jsonString);
 
-class GetGroupsModel {
+import 'dart:convert';
+
+GetUserGroup getUserGroupFromJson(String str) => GetUserGroup.fromJson(json.decode(str));
+
+String getUserGroupToJson(GetUserGroup data) => json.encode(data.toJson());
+
+class GetUserGroup {
   bool success;
   String message;
   int code;
   List<Datum> data;
 
-  GetGroupsModel({
+  GetUserGroup({
     required this.success,
     required this.message,
     required this.code,
     required this.data,
   });
 
-  factory GetGroupsModel.fromJson(Map<String, dynamic> json) => GetGroupsModel(
+  factory GetUserGroup.fromJson(Map<String, dynamic> json) => GetUserGroup(
     success: json["success"],
     message: json["message"],
     code: json["code"],
@@ -29,36 +38,32 @@ class GetGroupsModel {
 
 class Datum {
   int id;
-  String name;
-  int approvedBy;
-  String approvedAdminName;
-  String approvedAdminEmail;
-  bool isAdmin;
+  int userId;
+  int isAdmin;
+  String userName;
+  String userEmail;
 
   Datum({
     required this.id,
-    required this.name,
-    required this.approvedBy,
-    required this.approvedAdminName,
-    required this.approvedAdminEmail,
+    required this.userId,
     required this.isAdmin,
+    required this.userName,
+    required this.userEmail,
   });
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
     id: json["id"],
-    name: json["name"],
-    approvedBy: json["approved_by"],
-    approvedAdminName: json["approved_admin_name"],
-    approvedAdminEmail: json["approved_admin_email"],
+    userId: json["user_id"],
     isAdmin: json["is_admin"],
+    userName: json["user_name"],
+    userEmail: json["user_email"],
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "name": name,
-    "approved_by": approvedBy,
-    "approved_admin_name": approvedAdminName,
-    "approved_admin_email": approvedAdminEmail,
+    "user_id": userId,
     "is_admin": isAdmin,
+    "user_name": userName,
+    "user_email": userEmail,
   };
 }

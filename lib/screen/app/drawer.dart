@@ -48,12 +48,12 @@ class Drawer_App extends StatelessWidget {
         BlocConsumer<registerCubit, registerSates>(
           listener: (BuildContext context, registerSates state) {
             if (state is LogoutSuccessState) {
-              CachHelper.removeData(key: "token");
-              print("we are going to login screen");
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Login()),
-              );
+              // CachHelper.removeData(key: "token");
+              // print("we are going to login screen");
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => Login()),
+              // );
             }
           },
           builder: (BuildContext context, registerSates state) {
@@ -66,7 +66,9 @@ class Drawer_App extends StatelessWidget {
                 ),
               ),
               onTap: () {
-                registerCubit.get(context).log_out();
+
+                openlogoutDialog(context);
+
               },
             );
           },
@@ -74,4 +76,67 @@ class Drawer_App extends StatelessWidget {
       ],
     );
   }
+
+
+
+  openlogoutDialog(BuildContext context) {
+    return showGeneralDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierLabel: '',
+      transitionDuration: Duration(milliseconds: 300),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Container();
+      },
+      transitionBuilder: (context, a1, a2, child) {
+        return ScaleTransition(
+          scale: Tween<double>(begin: 0.5, end: 1.0).animate(a1),
+          child: AlertDialog(
+            // backgroundColor: ColorApp.colorback,
+            title: Row(
+              children: [
+                // Padding(
+                //   padding: const EdgeInsets.only(bottom: 5, right: 5),
+                //   child: Icon(
+                //     Icons.logou,
+                //     color: ColorApp.color2,
+                //     size: 18,
+                //   ),
+                // ),
+                Center(child: Text('Confirmation')),
+              ],
+            ),
+            content: Text('Are you sure you want to logout?'),
+            shape: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none),
+            actions: [
+              TextButton(
+                  child:Text( 'Cancel'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              TextButton(
+              child:Text('Log out'),
+
+                  onPressed: () {
+
+                    registerCubit.get(context).log_out();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Login()),
+                    );
+                    CachHelper.removeData(key: "token");
+
+                  })
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+
+
+
 }

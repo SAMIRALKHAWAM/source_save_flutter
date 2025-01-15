@@ -5,6 +5,7 @@ import '../../../network/end_point.dart';
 import '../../models/get _permission_model.dart';
 import '../../models/get_file_model.dart';
 import '../../models/get_groups_model.dart';
+import '../../models/get_user_group_model.dart';
 import '../../models/get_user_model.dart';
 
 import '../../network/dio_helper.dart';
@@ -12,10 +13,11 @@ import '../../network/dio_helper.dart';
 class AppCubit extends Cubit<AppSates> {
   AppCubit() : super(AppInitialState());
   static AppCubit get(context) => BlocProvider.of(context);
-  GetUser? getUser;
+
   List<DataUser> getUsersearch = [];
 
   ///////////////////////Get Users
+  GetUser? getUser;
   void getUsers() {
     getUsersearch = [];
     searchResults = [];
@@ -30,12 +32,38 @@ class AppCubit extends Cubit<AppSates> {
       });
       searchResults = List.from(getUsersearch); // إرجاع جميع الأعضاء
 
-      print(value.data);
     }).catchError((error) {
       print(error.toString());
       emit(userErrorState());
     });
   }
+
+  ///////////////////////Get Users group
+  GetUserGroup? getUsergroup;
+  void get_group_users({
+    required id,
+
+}) {
+
+    emit(LoadingState());
+    DioHelper.getData(
+      url: baseurl +"/get_group_users?groupId=$id",
+    ).then((value) {
+      emit(userSuccessState());
+      getUsergroup = GetUserGroup.fromJson(value.data);
+
+
+
+
+    }).catchError((error) {
+      print(error.toString());
+      emit(userErrorState());
+    });
+  }
+
+///////////////////////////////////////
+
+
 
 ///////////////////////////////////////
   GetPremmetion? getpermissions;
@@ -46,7 +74,6 @@ class AppCubit extends Cubit<AppSates> {
     ).then((value) {
       emit(get_permissionsSuccessState());
       getpermissions = GetPremmetion.fromJson(value.data);
-      print(value.data);
     }).catchError((error) {
       print(error.toString());
       emit(get_permissionsErrorState());
@@ -64,7 +91,6 @@ class AppCubit extends Cubit<AppSates> {
             url: baseurl + addgroup,
             data: {'name': name, 'users': userId, 'permissions': perId})
         .then((value) {
-      print(value.data);
       emit(add_groupSuccessState());
     }).catchError((error) {
       print(error.toString());
@@ -99,7 +125,6 @@ class AppCubit extends Cubit<AppSates> {
     emit(LoadingState());
     DioHelper.getData( url: baseurl + "/get_files?group_id=$id_group&status=accepted")
         .then((value) {
-      print(value.data);
       emit(get_fileSuccessState());
       get_file = GetFileModel.fromJson(value.data);
 
@@ -108,6 +133,61 @@ class AppCubit extends Cubit<AppSates> {
       emit(get_fileErrorState());
     });
   }
+
+  ///////////////////////////////////////////  get_file_pending
+  GetFileModel? get_file_pending ;
+  void get_file_pe({required dynamic id_group}) {
+    emit(LoadingState());
+    DioHelper.getData( url: baseurl + "/get_files?group_id=$id_group&status=pending ")
+        .then((value) {
+      emit(get_fileSuccessState());
+      get_file_pending = GetFileModel.fromJson(value.data);
+
+    }).catchError((error) {
+      print(error.toString());
+      emit(get_fileErrorState());
+    });
+  }
+
+  ///////////////////////////////////////////  change_file_status
+  void change_file_status({
+    required status,
+    required fileId,
+  }) {
+    emit(LoadingState());
+    DioHelper.postData(
+        url: baseurl + change_status,
+        data: {'file_id': fileId, 'status': status, })
+        .then((value) {
+      emit(add_groupSuccessState());
+    }).catchError((error) {
+      print(error.toString());
+      emit(add_groupErrorState());
+    });
+  }
+
+  ///////////////////////////////////////////  check_in_files
+  void check_in_files({
+    required group_id,
+    required files,
+
+  }) {
+    emit(LoadingState());
+    DioHelper.postData(
+        url: baseurl + "/check_in_files",
+        data: {'group_id': group_id, 'files': files})
+        .then((value) {
+      emit(check_in_filesSuccessState());
+    }).catchError((error) {
+      print('Error: ${error.toString()}');
+      if (error is DioError) {
+        print('Dio error: ${error.response?.data}');
+      }
+      emit(check_in_filesErrorState());
+    });
+  }
+
+
 
 ///////////////////////////////////////////  search
   List<DataUser> searchResults = [];
@@ -154,4 +234,21 @@ class AppCubit extends Cubit<AppSates> {
       emit(get_groupsErrorState());
     });
   }
+
+  ////////////////////////////////////// leave_group
+  void leave_group({
+    required groupId,
+  }) {
+    emit(LoadingState());
+    DioHelper.postData(
+        url: baseurl + "/leave_group",
+        data: {'groupId': groupId  })
+        .then((value) {
+      emit(leave_groupSuccessState());
+    }).catchError((error) {
+      print(error.toString());
+      emit(leave_groupErrorState());
+    });
+  }
+
 }

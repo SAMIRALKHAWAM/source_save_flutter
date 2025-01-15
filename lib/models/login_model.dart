@@ -1,13 +1,3 @@
-// To parse this JSON data, do
-//
-//     final loginModel = loginModelFromJson(jsonString);
-
-import 'dart:convert';
-
-LoginModel loginModelFromJson(String str) => LoginModel.fromJson(json.decode(str));
-
-String loginModelToJson(LoginModel data) => json.encode(data.toJson());
-
 class LoginModel {
   bool success;
   String message;
@@ -41,6 +31,7 @@ class Data {
   String name;
   String email;
   dynamic emailVerifiedAt;
+  String role;
   String token;
 
   Data({
@@ -48,6 +39,7 @@ class Data {
     required this.name,
     required this.email,
     required this.emailVerifiedAt,
+    required this.role,
     required this.token,
   });
 
@@ -56,6 +48,7 @@ class Data {
     name: json["name"],
     email: json["email"],
     emailVerifiedAt: json["email_verified_at"],
+    role: json["role"],
     token: json["token"],
   );
 
@@ -64,6 +57,7 @@ class Data {
     "name": name,
     "email": email,
     "email_verified_at": emailVerifiedAt,
+    "role": role,
     "token": token,
   };
 }

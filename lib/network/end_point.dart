@@ -1,5 +1,5 @@
 
-const String baseurl='http://192.168.137.201:8000/user_api';
+const String baseurl='http://192.168.1.106:8000/user_api';
 String? token=" ";
 
 String login='/login';
@@ -14,5 +14,8 @@ String get_users='/get_users';
 String premmetion='/get_permissions';
 String addgroup='/add_group';
 String addfile="/add_file";
-String  getgroups="/get_groups";
+String check_files="/check_in_files";
+String  getgroups="/get_groups?status=accepted";
+String change_status="/change_file_status";
+
 

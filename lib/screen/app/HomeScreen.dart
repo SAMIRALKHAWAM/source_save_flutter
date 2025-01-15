@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isLargeScreen = screenWidth >= 800;
-    AppCubit.get(context).get_permissions();
+    // AppCubit.get(context).get_permissions();
     AppCubit.get(context).get_groups();
 
     final drawerContent = Drawer_App();
@@ -123,7 +123,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           .get_group!
                                                           .data[index]
                                                           .name,
-                                                  isAdmin: true,
+                                                  isAdmin: AppCubit.get(context)
+                                                      .get_group!
+                                                      .data[index]
+                                                      .isAdmin,
                                                   groupId: AppCubit.get(context)
                                                       .get_group!
                                                       .data[index]
@@ -173,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return BlocConsumer<AppCubit, AppSates>(
           listener: (BuildContext context, AppSates state) {},
           builder: (BuildContext context, AppSates state) {
-            return AppCubit.get(context).getUsersearch != null
+            return AppCubit.get(context).getUsersearch !=null
                 ? AlertDialog(
                     title: Text("create group "),
                     content: Container(
@@ -201,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   AppCubit.get(context).searchResults!.length,
                               itemBuilder: (context, index) {
                                 int? userId = AppCubit.get(context)
-                                    .searchResults![index]
+                                    .searchResults[index]
                                     .id;
 
                                 return ListTile(
@@ -219,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     child: Text(
                                       AppCubit.get(context)
-                                          .searchResults![index]
+                                          .searchResults[index]
                                           .name
                                           .toString(),
                                       style: TextStyle(),
@@ -331,7 +334,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         name: nameController.text,
                         userId: userIds,
                         perId: [1, 2, 3]);
-                  },
+                  AppCubit.get(context).get_groups();
+                    },
+
                   child: Text(" Done "),
                 ),
               ],

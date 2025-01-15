@@ -19,9 +19,16 @@ class add_fileErrorState extends AppSates{}
 class get_fileSuccessState extends AppSates{}
 class get_fileErrorState extends AppSates{}
 
+class check_in_filesSuccessState extends AppSates{}
+class check_in_filesErrorState extends AppSates{}
+
 class get_groupsSuccessState extends AppSates{}
 class get_groupsErrorState extends AppSates{}
 
+
+
+class leave_groupSuccessState extends AppSates{}
+class leave_groupErrorState extends AppSates{}
 
 
 class SerchState extends AppSates {}
