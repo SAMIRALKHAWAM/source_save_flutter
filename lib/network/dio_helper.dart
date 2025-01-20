@@ -7,6 +7,7 @@ class DioHelper {
     dio = Dio(BaseOptions(
       baseUrl: baseurl,
       receiveDataWhenStatusError: true,
+
     ));
   }
 
@@ -21,6 +22,8 @@ class DioHelper {
 
     return await dio.post(url, data: data);
   }
+
+
 
   static Future<Response> DeleteData({
     required String url,
@@ -43,4 +46,13 @@ class DioHelper {
     };
     return await dio.get(url);
   }
+
+  static Future<Response> getdo({
+    required String url,
+    // required Map<String,dynamic> query,
+  }) async {
+
+    return await dio.get(url,options: Options(responseType: ResponseType.stream));
+  }
+
 }

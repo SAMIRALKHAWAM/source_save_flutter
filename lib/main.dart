@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:source_safe/cubits/app/cubit.dart';
+import 'package:source_safe/screen/app/12.dart';
 import 'package:source_safe/screen/app/HomeScreen.dart';
 import 'package:source_safe/screen/regester/login.dart';
 
@@ -11,14 +13,30 @@ import 'network/dio_helper.dart';
 import 'network/end_point.dart';
 
 void main() async{
+  await EasyLocalization.ensureInitialized();
+
   Widget startwidget;
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer=MyBlocObserver();
+
   DioHelper.init();
   await CachHelper.init();
   token=CachHelper.getData(key: "token");
+  id=CachHelper.getData(key: "id");
+
   token !=null?startwidget=HomeScreen():startwidget=Login();
-  runApp( MyApp(startwidget: startwidget,));
+  runApp(
+
+      EasyLocalization(
+        supportedLocales: [Locale('ar'),Locale('en')],
+        path: 'assets/translations',
+        fallbackLocale: Locale('en'),
+        child:  MyApp(startwidget: startwidget,),
+      ),
+
+
+
+     );
 }
 
 class MyApp extends StatelessWidget {
@@ -43,6 +61,10 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
+
         home:startwidget,
       ),
     );

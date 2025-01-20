@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:source_safe/cubits/app/state.dart';
@@ -9,6 +11,7 @@ import '../../models/get_user_group_model.dart';
 import '../../models/get_user_model.dart';
 
 import '../../network/dio_helper.dart';
+import 'dart:html' as html;
 
 class AppCubit extends Cubit<AppSates> {
   AppCubit() : super(AppInitialState());
@@ -249,6 +252,128 @@ class AppCubit extends Cubit<AppSates> {
       print(error.toString());
       emit(leave_groupErrorState());
     });
+
   }
+
+
+  ///////////////////////////////
+  GetFileModel?  get_file_user_ingroup_reserved;
+  GetFileModel?  get_file_user_ingroup_free;
+  GetFileModel?  get_file_user_ingroup;
+
+
+  void get_file_user(
+  {required userId,
+  required f_r,
+  required groupeId}
+      ) {
+    print(f_r);
+    print(groupeId);
+    print(userId);
+
+    emit(LoadingState());
+    DioHelper.getData(
+      url: baseurl + "/get_user_files?groupId=$groupeId&userId=$userId&status=$f_r",
+    ).then((value) {
+      f_r=="free"?
+      get_file_user_ingroup_free = GetFileModel.fromJson(value.data):
+      f_r=="reserved"?
+      get_file_user_ingroup_reserved = GetFileModel.fromJson(value.data)
+:      get_file_user_ingroup= GetFileModel.fromJson(value.data);
+
+
+
+      emit(get_groupsSuccessState());
+      print(value.data);
+    }).catchError((error) {
+      if (error is DioException) {
+        print('Dio error type: ${error.type}');
+        print('Dio error message: ${error.response}');
+      }      emit(get_groupsErrorState());
+    });
+  }
+
+
+  Future<void> downloadf(String fileurl)async {
+    emit(LoadingState());
+
+
+
+    DioHelper.getdo(url: 'https://cors-anywhere.herokuapp.com/'+ fileurl)
+        .then((value) async {
+      emit(leave_groupSuccessState());
+
+      // تحويل البيانات إلى Base64
+      final _base64 = base64Encode(value.data);
+
+      // إنشاء الرابط لتحميل الملف باستخدام بيانات Base64
+      final anchor = html.AnchorElement(href: 'data:application/octet-stream;base64,$_base64')
+        ..target = 'blank';
+
+      // إضافة اسم الملف
+      if (fileurl != null) {
+        anchor.download = "downloadName";  // أو استخدم fileurl.split('/').last لاستخراج اسم الملف من الرابط
+      }
+
+      // بدء تحميل الملف
+      anchor.click();
+      anchor.remove();
+      return;
+    }).catchError((error) {
+      print(fileurl);
+      print("خطأ في طلب Dio: ${error.toString()}");
+      print('Dio error: ${error.response?.data}');
+      emit(leave_groupErrorState());
+    });
+  }
+
+
+  // void downloadf(String fileurl){
+  //   emit(LoadingState());
+  //
+  //   DioHelper.getdo(url: "https://cors-anywhere.herokuapp.com/"+fileurl) .then((value) async {
+  //     emit(leave_groupSuccessState());
+  //     // final blob = await value.data.stream();
+  //     // final urlBlob = html.Url.createObjectUrlFromBlob(blob);
+  //     //
+  //     // // إنشاء رابط لتحميل الملف
+  //     // final anchor = html.AnchorElement(href: urlBlob)
+  //     //   ..target = 'none'
+  //     //   ..download = fileurl.split('/').last;
+  //     //
+  //     // // محاكاة النقر على الرابط لتنزيل الملف
+  //     // anchor.click();
+  //     //
+  //     // // تنظيف الـ Blob بعد التنزيل
+  //     // html.Url.revokeObjectUrl(urlBlob);
+  //     //
+  //     //
+  //     ////////////
+  //     // Encode our file in base64
+  //     final _base64 = base64Encode(value.data);
+  //     // Create the link with the file
+  //     final anchor =
+  //     html.AnchorElement(href: 'data:application/octet-stream;base64,$_base64')
+  //       ..target = 'blank';
+  //     // add the name
+  //     if (fileurl != null) {
+  //       anchor.download = "downloadName";
+  //     }
+  //     // trigger download
+  //     // document.body.append(anchor);
+  //     anchor.click();
+  //     anchor.remove();
+  //     return;
+  //
+  //
+  //
+  //   }).catchError((error) {
+  //     print(error.toString());
+  //     emit(leave_groupErrorState());
+  //   });
+  //
+  //
+  // }
+
 
 }

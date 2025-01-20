@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:source_safe/cubits/app/cubit.dart';
 import 'package:source_safe/cubits/app/state.dart';
-import 'package:source_safe/network/cash_helper.dart';
-import 'package:source_safe/network/end_point.dart';
 
-import '../../cubits/app/cubit.dart';
-import '../../cubits/regester/cubit.dart';
-import '../../cubits/regester/state.dart';
-import '../regester/login.dart';
 import 'GroupDetailes.dart';
 import 'drawer.dart';
 
@@ -19,149 +14,154 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<int?> userIds = [];
   List<int> perIds = [];
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isLargeScreen = screenWidth >= 800;
-    // AppCubit.get(context).get_permissions();
     AppCubit.get(context).get_groups();
-
     final drawerContent = Drawer_App();
 
     return BlocConsumer<AppCubit, AppSates>(
       listener: (context, state) {},
       builder: (context, state) {
         return AppCubit.get(context).get_group == null
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
+            ? Center(child: CircularProgressIndicator())
             : Scaffold(
-                appBar: AppBar(
-                  title: Text('File Manager'),
-                  backgroundColor: Colors.blue[800],
-                  centerTitle: true,
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(56),
+            child: AppBar(
+              title: Text('File Manager'),
+              backgroundColor: Colors.deepPurple[600],
+              centerTitle: true,
+              elevation: 5.0,
+              // Modify shape based on screen size
+              shape: isLargeScreen
+                  ? RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              )
+                  : RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
                 ),
-                body: Row(
-                  children: [
-                    if (isLargeScreen)
-                      Container(
-                        color: Colors.blue[800],
-                        width: 250,
-                        child: drawerContent,
+              ),
+            ),
+          ),
+          body: Row(
+            children: [
+              if (isLargeScreen)
+                Container(
+                  color: Colors.deepPurple[600],
+                  width: 250,
+                  child: drawerContent,
+                ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Groups",
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepPurple[600],
+                          letterSpacing: 1.2,
+                        ),
                       ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Groups",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue[800],
+                      SizedBox(height: 16),
+                      Expanded(
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            int crossAxisCount = 1;
+
+                            if (constraints.maxWidth >= 1200) {
+                              crossAxisCount = 4;
+                            } else if (constraints.maxWidth >= 800) {
+                              crossAxisCount = 3;
+                            } else if (constraints.maxWidth >= 600) {
+                              crossAxisCount = 2;
+                            }
+
+                            return GridView.builder(
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: crossAxisCount,
+                                crossAxisSpacing: 16,
+                                mainAxisSpacing: 16,
+                                childAspectRatio: 1.1,
                               ),
-                            ),
-                            SizedBox(height: 16),
-                            Expanded(
-                              child: LayoutBuilder(
-                                builder: (context, constraints) {
-                                  int crossAxisCount = 1;
-
-                                  if (constraints.maxWidth >= 1200) {
-                                    crossAxisCount = 4;
-                                  } else if (constraints.maxWidth >= 800) {
-                                    crossAxisCount = 3;
-                                  } else if (constraints.maxWidth >= 600) {
-                                    crossAxisCount = 2;
-                                  }
-
-                                  return GridView.builder(
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: crossAxisCount,
-                                      crossAxisSpacing: 16,
-                                      mainAxisSpacing: 16,
-                                      // childAspectRatio: 4,
-                                    ),
-                                    itemCount: AppCubit.get(context)
-                                        .get_group!
-                                        .data
-                                        .length,
-                                    itemBuilder: (context, index) {
-                                      return Card(
-                                        elevation: 4,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: ListTile(
-                                          title: Text(
-                                            AppCubit.get(context)
+                              itemCount: AppCubit.get(context).get_group!.data.length,
+                              itemBuilder: (context, index) {
+                                return Card(
+                                  elevation: 6,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => GroupDetailsScreen(
+                                            groupName: AppCubit.get(context)
                                                 .get_group!
                                                 .data[index]
                                                 .name,
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500,
-                                            ),
+                                            isAdmin: AppCubit.get(context)
+                                                .get_group!
+                                                .data[index]
+                                                .isAdmin,
+                                            groupId: AppCubit.get(context)
+                                                .get_group!
+                                                .data[index]
+                                                .id,
                                           ),
-                                          trailing: Icon(
-                                            Icons.arrow_forward_ios,
-                                            color: Colors.blue[800],
-                                            size: 18,
-                                          ),
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    GroupDetailsScreen(
-                                                  groupName:
-                                                      AppCubit.get(context)
-                                                          .get_group!
-                                                          .data[index]
-                                                          .name,
-                                                  isAdmin: AppCubit.get(context)
-                                                      .get_group!
-                                                      .data[index]
-                                                      .isAdmin,
-                                                  groupId: AppCubit.get(context)
-                                                      .get_group!
-                                                      .data[index]
-                                                      .id,
-                                                ),
-                                              ),
-                                            );
-                                          },
                                         ),
                                       );
                                     },
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
+                                    child: ListTile(
+                                      title: Text(
+                                        AppCubit.get(context)
+                                            .get_group!
+                                            .data[index]
+                                            .name,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.deepPurple[600],
+                                        ),
+                                      ),
+                                      trailing: Icon(
+                                        Icons.arrow_forward_ios,
+                                        color: Colors.deepPurple[600],
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                drawer: isLargeScreen
-                    ? null
-                    : Drawer(
-                        child: drawerContent,
-                      ),
-                floatingActionButton: FloatingActionButton(
-                  backgroundColor: Colors.blue[800],
-                  child: Icon(Icons.group_add_rounded),
-                  onPressed: () {
-                    _showCreateGroupDialog(context);
-                    AppCubit.get(context).getUsers();
-                  },
-                ),
-              );
+              ),
+            ],
+          ),
+          drawer: isLargeScreen ? null : Drawer(child: drawerContent),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.deepPurple[600],
+            child: Icon(Icons.group_add_rounded),
+            onPressed: () {
+              _showCreateGroupDialog(context);
+              AppCubit.get(context).getUsers();
+            },
+          ),
+        );
       },
     );
   }
@@ -170,126 +170,205 @@ class _HomeScreenState extends State<HomeScreen> {
     final TextEditingController searchController = TextEditingController();
     userIds.clear();
 
+    // استخدام MediaQuery للحصول على عرض الشاشة
+    final screenWidth = MediaQuery.of(context).size.width;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return BlocConsumer<AppCubit, AppSates>(
           listener: (BuildContext context, AppSates state) {},
           builder: (BuildContext context, AppSates state) {
-            return AppCubit.get(context).getUsersearch !=null
+            return AppCubit.get(context).getUsersearch != null
                 ? AlertDialog(
-                    title: Text("create group "),
-                    content: Container(
-                      width: double.maxFinite,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextField(
-                            controller: searchController,
-                            decoration: InputDecoration(
-                              labelText: "serch member",
-                              prefixIcon: Icon(Icons.search),
-                            ),
-                            onChanged: (value) {
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: Text(
+                "Create Group",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue[800],  // اللون الأزرق المستخدم
+                ),
+              ),
+              content: Container(
+                width: screenWidth > 800 ? 500 : double.maxFinite, // تحديد العرض بناءً على حجم الشاشة
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Search TextField
+                    TextField(
+                      controller: searchController,
+                      decoration: InputDecoration(
+                        labelText: "Search Member",
+                        labelStyle: TextStyle(color: Colors.blue[800]),
+                        prefixIcon: Icon(Icons.search, color: Colors.blue[800]),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Colors.blue[800]!,
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          AppCubit.get(context).serch_name(value);
+                        });
+                      },
+                    ),
+                    SizedBox(height: 16),
+                    // Search Results
+                    Expanded(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: AppCubit.get(context).searchResults!.length,
+                        itemBuilder: (context, index) {
+                          int? userId = AppCubit.get(context)
+                              .searchResults[index]
+                              .id;
+
+                          return GestureDetector(
+                            onTap: () {
                               setState(() {
-                                AppCubit.get(context).serch_name(value);
+                                if (!userIds.contains(userId)) {
+                                  userIds.add(userId); // Add userId
+                                } else {
+                                  userIds.remove(userId); // Remove userId
+                                }
                               });
                             },
-                          ),
-                          SizedBox(height: 8),
-                          Expanded(
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount:
-                                  AppCubit.get(context).searchResults!.length,
-                              itemBuilder: (context, index) {
-                                int? userId = AppCubit.get(context)
-                                    .searchResults[index]
-                                    .id;
-
-                                return ListTile(
-                                  title: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 15),
-                                    decoration: BoxDecoration(
-                                      color: userIds.contains(userId)
-                                          ? Color(0x80A8E6A0)
-                                          : Colors.white38,
-                                      borderRadius: BorderRadius.only(
-                                        bottomRight: Radius.circular(12),
-                                        topRight: Radius.circular(12),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      AppCubit.get(context)
-                                          .searchResults[index]
-                                          .name
-                                          .toString(),
-                                      style: TextStyle(),
+                            child: Container(
+                              margin: EdgeInsets.only(bottom: 8),
+                              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: userIds.contains(userId)
+                                    ? Colors.blue.withOpacity(0.2)  // خلفية زرقاء فاتحة
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.01),
+                                    blurRadius: 8,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    userIds.contains(userId)
+                                        ? Icons.check_circle
+                                        : Icons.check_circle_outline,
+                                    color: userIds.contains(userId)
+                                        ? Colors.blue[800]
+                                        : Colors.grey,
+                                  ),
+                                  SizedBox(width: 12),
+                                  Text(
+                                    AppCubit.get(context).searchResults[index].name.toString(),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black,
                                     ),
                                   ),
-                                  onTap: () {
-                                    // userIds.add(AppCubit.get(context).getUsersearch![index].id);
-
-                                    setState(() {
-                                      // إضافة الـ id إلى مصفوفة userIds إذا لم يكن موجودًا بالفعل
-                                      if (!userIds.contains(userId)) {
-                                        userIds.add(
-                                            userId); // إضافة الـ userId إلى المصفوفة
-                                      } else
-                                        userIds.remove(userId);
-                                    });
-                                  },
-                                );
-                              },
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("cancel"),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          _showNameGroupDialog(context);
-                          // String groupName = groupNameController.text;
-                          // String members = membersController.text;
-                          // // هنا يمكنك إضافة الكود لمعالجة البيانات المدخلة
-                          // print("اسم المجموعة: $groupName");
-                          // print("أسماء الأعضاء: $members");
-                          // Navigator.of(context).pop();
-                        },
-                        child: Text(" Next "),
-                      ),
-                    ],
-                  )
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    "Cancel",
+                    style: TextStyle(color: Colors.blue[800]),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (userIds.isEmpty) {
+                      // عرض تحذير في حال لم يتم اختيار أي شخص
+                      _showNoMembersSelectedDialog(context);
+                    } else {
+                      Navigator.of(context).pop();
+                      _showNameGroupDialog(context);
+                    }
+                  },
+                  child: Text("Next",style:TextStyle(color: Colors.white),),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue[800],  // اللون الأزرق المستخدم
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
+            )
                 : AlertDialog(
-                    title: Text("Create Group"),
-                    content: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("Cancel"),
-                      ),
-                    ],
-                  );
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: Text("Create Group"),
+              content: Center(
+                child: CircularProgressIndicator(),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Cancel"),
+                ),
+              ],
+            );
           },
         );
       },
     );
   }
 
+// عرض رسالة تحذير في حال لم يتم اختيار أي شخص
+  void _showNoMembersSelectedDialog(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text("No Members Selected"),
+          content: Container(
+            width: screenWidth > 800 ? 500 : double.maxFinite, // تحديد العرض بناءً على حجم الشاشة
+            child: Text("Please select at least one member to create the group."),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // إغلاق الحوار
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   void _showNameGroupDialog(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     final TextEditingController nameController = TextEditingController();
 
     showDialog(
@@ -299,7 +378,6 @@ class _HomeScreenState extends State<HomeScreen> {
           listener: (BuildContext context, AppSates state) {
             if (state is add_groupSuccessState) {
               AppCubit.get(context).get_groups();
-
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -308,36 +386,67 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           builder: (BuildContext context, AppSates state) {
             return AlertDialog(
-              title: Text("create group"),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      labelText: "name",
-                      prefixIcon: Icon(Icons.search),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: Text(
+                "Create Group",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue[800], // اللون الأزرق المستخدم
+                ),
+              ),
+              content: Container(
+                width: screenWidth > 800 ? 500 : double.maxFinite, // تحديد العرض بناءً على حجم الشاشة
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // TextField for Group Name
+                    TextField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        labelText: "Group Name",
+                        labelStyle: TextStyle(color: Colors.blue[800]),
+                        prefixIcon: Icon(Icons.group, color: Colors.blue[800]),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Colors.blue[800]!,
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 16),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text("cancel"),
+                  child: Text(
+                    "Cancel",
+                    style: TextStyle(color: Colors.blue[800]),
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     AppCubit.get(context).add_group(
-                        name: nameController.text,
-                        userId: userIds,
-                        perId: [1, 2, 3]);
-                  AppCubit.get(context).get_groups();
-                    },
-
-                  child: Text(" Done "),
+                      name: nameController.text,
+                      userId: userIds,
+                      perId: [1, 2, 3],
+                    );
+                    AppCubit.get(context).get_groups();
+                  },
+                  child: Text("Done",style:TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue[800],  // اللون الأزرق المستخدم
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
               ],
             );
