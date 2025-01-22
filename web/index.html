@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+  <script src="firebase-messaging-sw.js"></script>
+  <script>
+    firebase.initializeApp({
+       apiKey: "AIzaSyAomavWmzEEkSAnAmVMxXVx_Cpkz5dUnF0",
+      authDomain: "sourcesave-31966.firebaseapp.com",
+      projectId: "sourcesave-31966",
+      storageBucket: "sourcesave-31966.firebasestorage.app",
+      messagingSenderId: "452046149500",
+      appId: "1:452046149500:web:4dbf88044dac13031ff6f9"
+    });
+
+    const messaging = firebase.messaging();
+  </script>
+
   <!--
     If you are serving your web app in a path other than the root, change the
     href value below to reflect the base path you are serving from.
@@ -33,6 +48,26 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+
+<script>
+  // Register the Firebase Service Worker for Push Notifications
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('firebase-messaging-sw.js') // The correct path to your service worker file
+      .then(function (registration) {
+        console.log('Registration successful, scope is:', registration.scope);
+      })
+      .catch(function (err) {
+        console.log('Service worker registration failed, error:', err);
+      });
+  }
+</script>
+
+
+<script src="flutter_bootstrap.js" async></script>
+
+
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

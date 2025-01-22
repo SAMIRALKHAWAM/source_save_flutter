@@ -155,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
           drawer: isLargeScreen ? null : Drawer(child: drawerContent),
           floatingActionButton: FloatingActionButton(
             backgroundColor: Colors.deepPurple[600],
-            child: Icon(Icons.group_add_rounded),
+            child: Icon(Icons.group_add_rounded,color: Colors.white,),
             onPressed: () {
               _showCreateGroupDialog(context);
               AppCubit.get(context).getUsers();

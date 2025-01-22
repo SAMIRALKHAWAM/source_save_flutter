@@ -6,6 +6,7 @@ import 'package:source_safe/cubits/app/state.dart';
 import '../../../network/end_point.dart';
 import '../../models/get _permission_model.dart';
 import '../../models/get_file_model.dart';
+import '../../models/get_file_version.dart';
 import '../../models/get_groups_model.dart';
 import '../../models/get_user_group_model.dart';
 import '../../models/get_user_model.dart';
@@ -33,8 +34,7 @@ class AppCubit extends Cubit<AppSates> {
       getUser!.data!.forEach((element) {
         getUsersearch.add(element);
       });
-      searchResults = List.from(getUsersearch); // إرجاع جميع الأعضاء
-
+      searchResults = List.from(getUsersearch);
     }).catchError((error) {
       print(error.toString());
       emit(userErrorState());
@@ -45,27 +45,18 @@ class AppCubit extends Cubit<AppSates> {
   GetUserGroup? getUsergroup;
   void get_group_users({
     required id,
-
-}) {
-
+  }) {
     emit(LoadingState());
     DioHelper.getData(
-      url: baseurl +"/get_group_users?groupId=$id",
+      url: baseurl + "/get_group_users?groupId=$id",
     ).then((value) {
       emit(userSuccessState());
       getUsergroup = GetUserGroup.fromJson(value.data);
-
-
-
-
     }).catchError((error) {
       print(error.toString());
       emit(userErrorState());
     });
   }
-
-///////////////////////////////////////
-
 
 
 ///////////////////////////////////////
@@ -105,9 +96,8 @@ class AppCubit extends Cubit<AppSates> {
   void add_file(
       {required String fileName, required List<int> fileBytes, required id}) {
     FormData formData = FormData.fromMap({
-      'url': MultipartFile.fromBytes(fileBytes,
-          filename: fileName), // إرسال الملف هنا كـ 'file'
-      'group_id': id, // إذا كان الباكيند يحتاج معرف المجموعة
+      'url': MultipartFile.fromBytes(fileBytes, filename: fileName),
+      'group_id': id,
       'name': fileName,
       "description": "aaaaaaaaaaaaaaaaaaaaaa aa",
     });
@@ -126,11 +116,11 @@ class AppCubit extends Cubit<AppSates> {
   GetFileModel? get_file;
   void get_file_accepted({required dynamic id_group}) {
     emit(LoadingState());
-    DioHelper.getData( url: baseurl + "/get_files?group_id=$id_group&status=accepted")
+    DioHelper.getData(
+            url: baseurl + "/get_files?group_id=$id_group&status=accepted")
         .then((value) {
       emit(get_fileSuccessState());
       get_file = GetFileModel.fromJson(value.data);
-
     }).catchError((error) {
       print(error.toString());
       emit(get_fileErrorState());
@@ -138,14 +128,14 @@ class AppCubit extends Cubit<AppSates> {
   }
 
   ///////////////////////////////////////////  get_file_pending
-  GetFileModel? get_file_pending ;
+  GetFileModel? get_file_pending;
   void get_file_pe({required dynamic id_group}) {
     emit(LoadingState());
-    DioHelper.getData( url: baseurl + "/get_files?group_id=$id_group&status=pending ")
+    DioHelper.getData(
+            url: baseurl + "/get_files?group_id=$id_group&status=pending ")
         .then((value) {
       emit(get_fileSuccessState());
       get_file_pending = GetFileModel.fromJson(value.data);
-
     }).catchError((error) {
       print(error.toString());
       emit(get_fileErrorState());
@@ -158,10 +148,10 @@ class AppCubit extends Cubit<AppSates> {
     required fileId,
   }) {
     emit(LoadingState());
-    DioHelper.postData(
-        url: baseurl + change_status,
-        data: {'file_id': fileId, 'status': status, })
-        .then((value) {
+    DioHelper.postData(url: baseurl + change_status, data: {
+      'file_id': fileId,
+      'status': status,
+    }).then((value) {
       emit(add_groupSuccessState());
     }).catchError((error) {
       print(error.toString());
@@ -173,13 +163,11 @@ class AppCubit extends Cubit<AppSates> {
   void check_in_files({
     required group_id,
     required files,
-
   }) {
     emit(LoadingState());
     DioHelper.postData(
         url: baseurl + "/check_in_files",
-        data: {'group_id': group_id, 'files': files})
-        .then((value) {
+        data: {'group_id': group_id, 'files': files}).then((value) {
       emit(check_in_filesSuccessState());
     }).catchError((error) {
       print('Error: ${error.toString()}');
@@ -189,8 +177,6 @@ class AppCubit extends Cubit<AppSates> {
       emit(check_in_filesErrorState());
     });
   }
-
-
 
 ///////////////////////////////////////////  search
   List<DataUser> searchResults = [];
@@ -245,43 +231,35 @@ class AppCubit extends Cubit<AppSates> {
     emit(LoadingState());
     DioHelper.postData(
         url: baseurl + "/leave_group",
-        data: {'groupId': groupId  })
-        .then((value) {
+        data: {'groupId': groupId}).then((value) {
       emit(leave_groupSuccessState());
     }).catchError((error) {
       print(error.toString());
       emit(leave_groupErrorState());
     });
-
   }
 
-
   ///////////////////////////////
-  GetFileModel?  get_file_user_ingroup_reserved;
-  GetFileModel?  get_file_user_ingroup_free;
-  GetFileModel?  get_file_user_ingroup;
+  GetFileModel? get_file_user_ingroup_reserved;
+  GetFileModel? get_file_user_ingroup_free;
+  GetFileModel? get_file_user_ingroup;
 
-
-  void get_file_user(
-  {required userId,
-  required f_r,
-  required groupeId}
-      ) {
+  void get_file_user({required userId, required f_r, required groupeId}) {
     print(f_r);
     print(groupeId);
     print(userId);
 
     emit(LoadingState());
     DioHelper.getData(
-      url: baseurl + "/get_user_files?groupId=$groupeId&userId=$userId&status=$f_r",
+      url: baseurl +
+          "/get_user_files?groupId=$groupeId&userId=$userId&status=$f_r",
     ).then((value) {
-      f_r=="free"?
-      get_file_user_ingroup_free = GetFileModel.fromJson(value.data):
-      f_r=="reserved"?
-      get_file_user_ingroup_reserved = GetFileModel.fromJson(value.data)
-:      get_file_user_ingroup= GetFileModel.fromJson(value.data);
-
-
+      f_r == "free"
+          ? get_file_user_ingroup_free = GetFileModel.fromJson(value.data)
+          : f_r == "reserved"
+              ? get_file_user_ingroup_reserved =
+                  GetFileModel.fromJson(value.data)
+              : get_file_user_ingroup = GetFileModel.fromJson(value.data);
 
       emit(get_groupsSuccessState());
       print(value.data);
@@ -289,17 +267,124 @@ class AppCubit extends Cubit<AppSates> {
       if (error is DioException) {
         print('Dio error type: ${error.type}');
         print('Dio error message: ${error.response}');
-      }      emit(get_groupsErrorState());
+      }
+      emit(get_groupsErrorState());
+    });
+  }
+
+  ///////////////////////////////////////////// check_out_withfile
+
+  void check_out_withfile({required List<int> fileBytes, required id}) {
+    FormData formData = FormData.fromMap({
+      'url': MultipartFile.fromBytes(fileBytes, filename: "abs"),
+      'file_id': id,
+      'update_type': "update",
+    });
+    emit(LoadingState());
+    DioHelper.postData(url: baseurl + check_out_file, data: formData)
+        .then((value) {
+      print(value.data);
+      emit(add_fileSuccessState());
+    }).catchError((error) {
+      if (error is DioException) {
+        print('Dio error type: ${error.type}');
+        print('Dio error message: ${error.response}');
+      }
+
+      print(error.toString());
+      emit(add_fileErrorState());
+    });
+  }
+
+  ///////////////////////////////////////////// check_out_nonfile
+
+  void check_out_nonfile({required id}) {
+    emit(LoadingState());
+    DioHelper.postData(url: baseurl + check_out_file, data: {
+      'file_id': id,
+      'update_type': "normal",
+    }).then((value) {
+      print(value.data);
+      emit(check_fileSuccessState());
+    }).catchError((error) {
+      print(error.toString());
+      emit(check_fileErrorState());
+    });
+  }
+
+////////////////////////////////////////// Get_File_Versions
+  GetFileVersionsModel? get_fileV;
+
+  void get_file_V({
+    required fileId,
+  }) {
+    emit(LoadingState());
+    DioHelper.getData(
+      url: baseurl + "/show_file_versions?fileId=$fileId",
+    ).then((value) {
+      get_fileV = GetFileVersionsModel.fromJson(value.data);
+      emit(get_fileSuccessState());
+      print(value.data);
+    }).catchError((error) {
+      if (error is DioException) {
+        // الطباعة بطريقة مفصلة
+        print('Dio error type: ${error.type}');
+        if (error.response != null) {
+          print('Dio error response: ${error.response}');
+        } else {
+          print('No response data');
+        }
+        print('Dio error message: ${error.message}');
+      } else {
+        // في حال كان هناك نوع آخر من الأخطاء
+        print('Error: $error');
+      }
+      emit(get_fileErrorState());
+    });
+  }
+
+  ///////////////////////////////// return_to_old_version
+
+  void return_to_old_version({
+    required old_file_id,
+
+  }) {
+    emit(LoadingState());
+    DioHelper.postData(
+        url: baseurl + "/return_to_old_version",
+        data: {'old_file_id': old_file_id})
+
+        .then((value) {
+      emit(add_groupSuccessState());
+    }).catchError((error) {
+
+      if (error is DioException) {
+        // الطباعة بطريقة مفصلة
+        print('Dio error type: ${error.type}');
+        if (error.response != null) {
+          print('Dio error response: ${error.response}');
+        } else {
+          print('No response data');
+        }
+        print('Dio error message: ${error.message}');
+      } else {
+        // في حال كان هناك نوع آخر من الأخطاء
+        print('Error: $error');
+      }
+
+      print(error.toString());
+      emit(add_groupErrorState());
     });
   }
 
 
-  Future<void> downloadf(String fileurl)async {
+
+//////////////////////////////////////////////////
+
+  Future<void> downloadf(String fileurl) async {
     emit(LoadingState());
 
-
-
-    DioHelper.getdo(url: 'https://cors-anywhere.herokuapp.com/'+ fileurl)
+    DioHelper.getdo(url: 'https://cors-anywhere.herokuapp.com/' + fileurl)
         .then((value) async {
       emit(leave_groupSuccessState());
 
@@ -307,12 +392,14 @@ class AppCubit extends Cubit<AppSates> {
       final _base64 = base64Encode(value.data);
 
       // إنشاء الرابط لتحميل الملف باستخدام بيانات Base64
-      final anchor = html.AnchorElement(href: 'data:application/octet-stream;base64,$_base64')
+      final anchor = html.AnchorElement(
+          href: 'data:application/octet-stream;base64,$_base64')
         ..target = 'blank';
 
       // إضافة اسم الملف
       if (fileurl != null) {
-        anchor.download = "downloadName";  // أو استخدم fileurl.split('/').last لاستخراج اسم الملف من الرابط
+        anchor.download =
+            "downloadName"; // أو استخدم fileurl.split('/').last لاستخراج اسم الملف من الرابط
       }
 
       // بدء تحميل الملف
@@ -326,7 +413,6 @@ class AppCubit extends Cubit<AppSates> {
       emit(leave_groupErrorState());
     });
   }
-
 
   // void downloadf(String fileurl){
   //   emit(LoadingState());
@@ -374,6 +460,4 @@ class AppCubit extends Cubit<AppSates> {
   //
   //
   // }
-
-
 }

@@ -7,8 +7,9 @@ import '../../models/get_file_model.dart';
 class UserDetailPage extends StatefulWidget {
   final dynamic userId;
   final dynamic groupeId;
+  dynamic userName;
 
-  UserDetailPage({required this.userId, required this.groupeId});
+  UserDetailPage({required this.userId, required this.groupeId,required this.userName});
 
   @override
   _UserDetailPageState createState() => _UserDetailPageState();
@@ -18,15 +19,13 @@ class _UserDetailPageState extends State<UserDetailPage> {
   @override
   void initState() {
     super.initState();
-    // تحميل البيانات عند بداية الصفحة
     _loadUserFiles();
   }
 
-  // تحميل الملفات بناءً على الفئة المحددة (reserved, free)
   void _loadUserFiles() {
     AppCubit.get(context).get_file_user(
       userId: widget.userId,
-      f_r: "free",  // يمكن تعديل الحالة حسب الحاجة
+      f_r: "free",
       groupeId: widget.groupeId,
     );
     AppCubit.get(context).get_file_user(
@@ -46,7 +45,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.blue.shade700,
-            title: Text('${widget.userId}\'s Files', style: TextStyle(fontWeight: FontWeight.bold)),
+            title: Text('${widget.userName}\'s Files', style: TextStyle(fontWeight: FontWeight.bold)),
             centerTitle: true,
             elevation: 0,
           ),
@@ -82,7 +81,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
           radius: 30,
           backgroundColor: Colors.blue.shade300,
           child: Text(
-            widget.userId.toString().substring(0, 1), // أول حرف من الاسم
+            widget.userName.toString().substring(0, 1), // أول حرف من الاسم
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),

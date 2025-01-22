@@ -6,6 +6,7 @@ import '../../cubits/regester/cubit.dart';
 import '../../cubits/regester/state.dart';
 import '../../network/cash_helper.dart';
 import '../../network/end_point.dart';
+import '../admain/homescreen.dart';
 import '../app/HomeScreen.dart';
 import 'forget.dart';
 
@@ -37,6 +38,15 @@ class _LoginState extends State<Login> {
 
           token=CachHelper.getData(key: "token");
           id=CachHelper.getData(key: "id");
+          registerCubit.get(context).loginmodel.data.role=="admin"?
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    AdminHomeScreen()
+            ),
+          ):
+
 
           Navigator.push(
             context,

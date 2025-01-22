@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:source_safe/cubits/regester/state.dart';
 import '../../../network/end_point.dart';
@@ -35,21 +36,29 @@ class registerCubit extends Cubit<registerSates> {
   void SignIn({
     required email,
     required password,
+
   }) {
     emit(LoginLoadingState());
     DioHelper.postData(url: baseurl + login, data: {
       'email': email,
       'password': password,
+      'fcm_token':fcm_token
     }).then((value) {
       loginmodel = LoginModel.fromJson(value.data);
       print(value.data);
+      print("Generated FCM Token: $fcm_token");
+
       emit(LoginSuccessState());
     }).catchError((error) {
+      if (error is DioException) {
+        print('Dio error type: ${error.type}');
+        print('Dio error message: ${error.response}');
+      }
+
       print(error.toString());
       emit(LoginErrorState());
     });
   }
-
 
 ///////////////////////////////////////////  resend_otp
 

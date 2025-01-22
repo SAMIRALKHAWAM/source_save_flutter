@@ -4,7 +4,7 @@ import 'package:source_safe/cubits/app/cubit.dart';
 
 class Book extends StatefulWidget {
   dynamic group_id;
- Book( { required this.group_id,super.key});
+  Book({required this.group_id, super.key});
 
   @override
   _BookState createState() => _BookState();
@@ -16,77 +16,94 @@ class _BookState extends State<Book> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blueAccent,
-        title: Text(
-          'booking file',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        elevation: 10,
-      ),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'select:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'select file :',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 16),
             Expanded(
               child: ListView.builder(
-                itemCount: AppCubit.get(context).get_file?.data.length,
+                itemCount: AppCubit.get(context).get_file?.data.length ?? 0,
                 itemBuilder: (context, index) {
-                  return Card(
-                    margin: EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 4,
-                    child: CheckboxListTile(
-                      title: Text(
-                        AppCubit.get(context).get_file!.data[index].name,
-                        style: TextStyle(fontSize: 16),
+                  var file = AppCubit.get(context).get_file!.data[index];
+                  bool isFileAvailable = file.reservedBy == null; // حالة الملف غير محجوز
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Card(
+                      margin: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      value: selectedFileIds.contains(AppCubit.get(context).get_file!.data[index].id),
-                      onChanged: (bool? value) {
-                        setState(() {
-                          if (value == true) {
-                            selectedFileIds.add( AppCubit.get(context).get_file!.data[index].id);
-                          } else {
-                            selectedFileIds.remove( AppCubit.get(context).get_file!.data[index].id);
-                          }
-                        });
-                      },
-                      activeColor: Colors.blueAccent,
+                      elevation: 4,
+                      color: isFileAvailable ? Colors.white : Colors.grey[300], // لون الرمادي للملفات غير المتاحة
+                      child: CheckboxListTile(
+                        title: Text(
+                          file.name,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: isFileAvailable ? Colors.black : Colors.grey, // تغيير اللون للنص عند عدم التوفر
+                          ),
+                        ),
+                        value: selectedFileIds.contains(file.id),
+                        onChanged: isFileAvailable
+                            ? (bool? value) {
+                          setState(() {
+                            if (value == true) {
+                              selectedFileIds.add(file.id);
+                            } else {
+                              selectedFileIds.remove(file.id);
+                            }
+                          });
+                        }
+                            : null, // تعطيل التفاعل عند عدم التوفر
+                        activeColor: Colors.purple[800],
+                        controlAffinity: ListTileControlAffinity.leading,
+                      ),
                     ),
                   );
                 },
               ),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                if (selectedFileIds.isNotEmpty) {
+            Center(
+              child: ElevatedButton(
+                onPressed: selectedFileIds.isNotEmpty
+                    ? () {
                   print('تم اختيار الملفات: $selectedFileIds');
                   print(widget.group_id);
-                  AppCubit.get(context).check_in_files(group_id: widget.group_id, files: selectedFileIds);
-                  // هنا يمكن تنفيذ عملية الحجز باستخدام المعرفات المحددة
-                } else {
-                  print('لم يتم اختيار أي ملفات');
+                  AppCubit.get(context)
+                      .check_in_files(group_id: widget.group_id, files: selectedFileIds);
+
+                  AppCubit.get(context)
+                      .get_file_accepted(id_group: widget.group_id);
+                  Book(group_id: widget.group_id);
                 }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+                    : null, // تعطيل الزر إذا لم يتم اختيار أي ملفات
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: selectedFileIds.isNotEmpty
+                      ? Colors.purple[800]
+                      : Colors.grey, // تغيير اللون إلى الرمادي عند تعطيل الزر
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  elevation: 5,
                 ),
-                elevation: 5,
-              ),
-              child: Text(
-                'booking',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                child: Text(
+                  'حجز الملفات',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,color: Colors.white),
+                ),
               ),
             ),
           ],
