@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:source_safe/cubits/app/state.dart';
 import '../../../network/end_point.dart';
+import '../../models/LogModel.dart';
+import '../../models/different_model.dart';
 import '../../models/get _permission_model.dart';
 import '../../models/get_file_model.dart';
 import '../../models/get_file_version.dart';
@@ -80,6 +82,10 @@ class AppCubit extends Cubit<AppSates> {
     required userId,
     required perId,
   }) {
+    print(name);
+    print(userId);
+    print(perId);
+
     emit(LoadingState());
     DioHelper.postData(
             url: baseurl + addgroup,
@@ -95,6 +101,9 @@ class AppCubit extends Cubit<AppSates> {
 ///////////////////////////////////////////  add_file
   void add_file(
       {required String fileName, required List<int> fileBytes, required id}) {
+
+    print(fileName);
+
     FormData formData = FormData.fromMap({
       'url': MultipartFile.fromBytes(fileBytes, filename: fileName),
       'group_id': id,
@@ -164,6 +173,9 @@ class AppCubit extends Cubit<AppSates> {
     required group_id,
     required files,
   }) {
+    print(group_id);
+    print(files);
+
     emit(LoadingState());
     DioHelper.postData(
         url: baseurl + "/check_in_files",
@@ -171,9 +183,6 @@ class AppCubit extends Cubit<AppSates> {
       emit(check_in_filesSuccessState());
     }).catchError((error) {
       print('Error: ${error.toString()}');
-      if (error is DioError) {
-        print('Dio error: ${error.response?.data}');
-      }
       emit(check_in_filesErrorState());
     });
   }
@@ -342,7 +351,21 @@ class AppCubit extends Cubit<AppSates> {
       emit(get_fileErrorState());
     });
   }
+  /////////////////////////////////// getdifferent
+  DifferentModel?differentModel;
+  void getdifferent(dynamic group_id,dynamic user_id) {
+    emit(LoadingState());
+    DioHelper.getData(
+      url: baseurl + "/get_edited_files?groupId=$group_id&userId=$user_id",
+    ).then((value) {
+      emit(differentSuccessState());
+      differentModel = DifferentModel.fromJson(value.data);
 
+    }).catchError((error) {
+      print(error.toString());
+      emit(differentErrorState());
+    });
+  }
   ///////////////////////////////// return_to_old_version
 
   void return_to_old_version({
@@ -377,6 +400,22 @@ class AppCubit extends Cubit<AppSates> {
     });
   }
 
+//////////////////////////////////////////// Log
+
+  LogModel?logModel;
+  void getFilesLog(dynamic fileId ) {
+    emit(LoadingState());
+    DioHelper.getData(
+      url: baseurl + "/get_file_log?fileId=$fileId",
+    ).then((value) {
+      emit(logSuccessState());
+      logModel = LogModel.fromJson(value.data);
+
+    }).catchError((error) {
+      print(error.toString());
+      emit(logErrorState());
+    });
+  }
 
 
 //////////////////////////////////////////////////

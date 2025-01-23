@@ -33,6 +33,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
       f_r: "reserved",
       groupeId: widget.groupeId,
     );
+    AppCubit.get(context).getdifferent(widget.groupeId,  widget.userId);
   }
 
   @override
@@ -44,7 +45,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
       builder: (BuildContext context, state) {
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.blue.shade700,
+            backgroundColor: Colors.purple.shade700,
             title: Text('${widget.userName}\'s Files', style: TextStyle(fontWeight: FontWeight.bold)),
             centerTitle: true,
             elevation: 0,
@@ -53,7 +54,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
             padding: const EdgeInsets.all(16.0),
             child:
             AppCubit.get(context).get_file_user_ingroup_reserved!=null&&
-              AppCubit.get(context).get_file_user_ingroup_reserved!=null?
+              AppCubit.get(context).differentModel!=null?
 
 
             ListView(
@@ -62,6 +63,8 @@ class _UserDetailPageState extends State<UserDetailPage> {
                 SizedBox(height: 20),
                 _buildExpansionTile('Reserved Files', AppCubit.get(context).get_file_user_ingroup_reserved, "reserved"),
                 _buildExpansionTile('Free Files', AppCubit.get(context).get_file_user_ingroup_free, "free"),
+                _buildExpansionTileD('update Files', AppCubit.get(context).differentModel, "free"),
+
               ],
             )
                 :        Center(child: CircularProgressIndicator())
@@ -79,7 +82,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
       children: [
         CircleAvatar(
           radius: 30,
-          backgroundColor: Colors.blue.shade300,
+          backgroundColor: Colors.purple.shade300,
           child: Text(
             widget.userName.toString().substring(0, 1), // أول حرف من الاسم
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
@@ -88,7 +91,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
         SizedBox(width: 20),
         Text(
           '${widget.userId}!',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue.shade800),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.purple.shade800),
         ),
       ],
     );
@@ -106,10 +109,10 @@ class _UserDetailPageState extends State<UserDetailPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       color: Colors.blue.shade50,
       child: ExpansionTile(
-        iconColor: Colors.blue.shade700,
+        iconColor: Colors.purple.shade700,
         title: Text(
           title,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.blue.shade700),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.purple.shade700),
         ),
         children: files.isEmpty
             ? [
@@ -124,11 +127,51 @@ class _UserDetailPageState extends State<UserDetailPage> {
             : files.map<Widget>((file) {
           return ListTile(
             title: Text(file.name ?? '', style: TextStyle(fontSize: 16, color: Colors.black87)),
-            trailing: Icon(Icons.file_download, color: Colors.blue),
+            trailing: Icon(Icons.file_download, color: Colors.purple[800]),
             // يمكن إضافة تفاصيل إضافية مثل التعديلات (إذا لزم الأمر)
             // subtitle: file.modified == 'Yes'
             //     ? Text('Modifications: ${file.modifications ?? ''}', style: TextStyle(fontSize: 14, color: Colors.grey.shade600))
             //     : null,
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildExpansionTileD(String title, dynamic fileList, String status) {
+    // استخراج البيانات من الملف إذا كانت موجودة
+    List<dynamic> files = fileList.data ?? [];  // التأكد من أن data موجودة
+
+    return Card(
+      elevation: 8,
+      margin: EdgeInsets.symmetric(vertical: 10),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      color: Colors.blue.shade50,
+      child: ExpansionTile(
+        iconColor: Colors.purple.shade700,
+        title: Text(
+          title,
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.purple.shade700),
+        ),
+        children: files.isEmpty
+            ? [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'No files available.',
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+            ),
+          ),
+        ]
+            : files.map<Widget>((file) {
+          return Column(
+            children: [
+              ListTile(
+                title: Text(file.diff ?? '', style: TextStyle(fontSize: 16, color: Colors.black87)),
+                // إضافة التفاصيل إذا لزم الأمر
+              ),
+              Divider(), // سطر فاصل بين العناصر
+            ],
           );
         }).toList(),
       ),

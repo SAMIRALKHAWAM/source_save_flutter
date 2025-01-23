@@ -31,12 +31,20 @@ class _RegisterWebState extends State<RegisterWeb> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    HomeScreen()
+                    Login()
             ),
           );
 
         }
         else
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    Login()
+            ),
+          );
           print('oops ');
       },
       builder: (BuildContext context, registerSates state) {

@@ -1,14 +1,18 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubits/regester/cubit.dart';
 import '../../cubits/regester/state.dart';
+import '../../cubits/theme/theme_cubit.dart';
 import '../../network/cash_helper.dart';
 import '../regester/login.dart';
 
 class Drawer_App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       color: Colors.purple[800],  // اللون المتناسق مع AppBar
       child: ListView(
@@ -37,7 +41,7 @@ class Drawer_App extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Welcome!',
+                  'Welcome!'.tr(),
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.white,
@@ -52,7 +56,7 @@ class Drawer_App extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.home, color: Colors.white),
             title: Text(
-              'Home',
+              'Home'.tr(),
               style: TextStyle(color: Colors.white),
             ),
             onTap: () {
@@ -61,13 +65,36 @@ class Drawer_App extends StatelessWidget {
           ),
 
           ListTile(
-            leading: Icon(Icons.settings, color: Colors.white),
+              leading: Icon(Icons.language),
+              title: Text(
+                "Change Language".tr(),
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              onTap: () async {
+                if (context.locale.languageCode == 'ar') {
+                  await context.setLocale(const Locale('en'));
+                } else {
+                  await context.setLocale(const Locale('ar'));
+                }
+              }),
+          ListTile(
+            leading: Icon(
+              BlocProvider.of<ThemeCubit>(context).isDark
+                  ? Icons.dark_mode
+                  : Icons.light_mode,
+            ),
             title: Text(
-              'Settings',
-              style: TextStyle(color: Colors.white),
+              'theme'.tr(),
+              style: TextStyle(
+                color: Colors.white,
+              ),
             ),
             onTap: () {
-              // Implement settings screen navigation if necessary
+              // عند الضغط على Settings، تغيير الثيم
+              BlocProvider.of<ThemeCubit>(context).switchTheme();
+              // Navigator.pop(context); // إغلاق الـ Drawer بعد التغيير
             },
           ),
 
@@ -82,7 +109,7 @@ class Drawer_App extends StatelessWidget {
               return ListTile(
                 leading: Icon(Icons.logout, color: Colors.white),
                 title: Text(
-                  'Logout',
+                  'Logout'.tr(),
                   style: TextStyle(color: Colors.white),
                 ),
                 onTap: () {

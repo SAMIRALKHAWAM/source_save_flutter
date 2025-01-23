@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:source_safe/cubits/admin/state.dart';
 
 import '../../models/get_file_admain.dart';
+import '../../models/get_file_model.dart';
 import '../../models/get_groups_model.dart';
 import '../../models/get_user_group_model.dart';
 import '../../models/get_user_model.dart';
@@ -96,7 +97,7 @@ class adminCubit extends Cubit<adminSates> {
     ).then((value) {
       emit(userSuccessState());
       getUsergroup = GetUserGroup.fromJson(value.data);
-      print(value.data);
+      // print(value.data);
     }).catchError((error) {
       print(error.toString());
       emit(userErrorState());
@@ -116,7 +117,7 @@ class adminCubit extends Cubit<adminSates> {
     ).then((value) {
       emit(get_groupsSuccessState());
       getgroupsuser = GetGroupAdminModel.fromJson(value.data);
-      print(value.data);
+      // print(value.data);
     }).catchError((error) {
       print(error.toString());
       emit(get_groupsErrorState());
@@ -137,6 +138,40 @@ class adminCubit extends Cubit<adminSates> {
     }).catchError((error) {
       print(error.toString());
       emit(changeErrorState());
+    });
+  }
+
+
+///////////////////////////////
+  GetFileModel? get_file_user_ingroup_reserved;
+  GetFileModel? get_file_user_ingroup_free;
+  GetFileModel? get_file_user_ingroup;
+
+  void get_file_user({required userId, required f_r, required groupeId}) {
+    print(f_r);
+    print(groupeId);
+    print(userId);
+
+    emit(LoadingState());
+    DioHelper.getData(
+      url: baseurladmain +
+          "/get_user_files?groupId=$groupeId&userId=$userId&status=$f_r",
+    ).then((value) {
+      f_r == "free"
+          ? get_file_user_ingroup_free = GetFileModel.fromJson(value.data)
+          : f_r == "reserved"
+          ? get_file_user_ingroup_reserved =
+          GetFileModel.fromJson(value.data)
+          : get_file_user_ingroup = GetFileModel.fromJson(value.data);
+
+      emit(get_groupsSuccessState());
+      print(value.data);
+    }).catchError((error) {
+      if (error is DioException) {
+        print('Dio error type: ${error.type}');
+        print('Dio error message: ${error.response}');
+      }
+      emit(get_groupsErrorState());
     });
   }
 

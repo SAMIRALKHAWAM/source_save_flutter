@@ -1,5 +1,140 @@
 {
-  "File": "File",
-  "Unlock without file upload": "Unlock without file upload",
-  "Unlock with file upload": "Unlock with file upload"
+
+
+
+  "Menu": "Menu",
+  "Home": "Home",
+  "Change Language": "Change Language",
+  "theme": "Theme",
+  "Logout": "Logout",
+  "Are you sure you want to logout?": "Are you sure you want to logout?",
+  "Cancel": "Cancel",
+  "Log out": "Log out",
+  "Confirmation": "Confirmation",
+  "lets sign in":"lets sign in",
+  "Hey, enter your details to sign in to your account.": "Hey, enter your details to sign in to your account.",
+  "Email": "Email",
+  "Enter your email": "Enter your email",
+  "Please enter your email": "Please enter your email",
+  "Please enter a valid email address": "Please enter a valid email address",
+  "Password": "Password",
+  "Enter your password": "Enter your password",
+  "Please enter your password": "Please enter your password",
+  "Password must be at least 6 characters long": "Password must be at least 6 characters long",
+  "Forget Password?": "Forget Password?",
+  "sign in": "sign in",
+  "Form is valid": "Form is valid",
+  "Form is not valid": "Form is not valid",
+  "Don't have an account? ": "Don't have an account? ",
+  "Sign Up": "Sign Up",
+  "Booking Files": "Booking Files",
+  "Select:": "Select:",
+  "Booking": "Booking",
+  "No files selected": "No files selected",
+  "select":"select",
+
+  "Find Your Account": "Find Your Account",
+  "Please enter your email address to recover your account. We will send you instructions to reset your password.": "Please enter your email address to recover your account. We will send you instructions to reset your password.",
+  "Your Email": "Your Email",
+  "Submit": "Submit",
+
+
+
+
+  "Enter the Code": "Enter the Code",
+  "Please enter the code sent to": "Please enter the code sent to",
+  "Code": "Code",
+  "Enter your code": "Enter your code",
+  "Please enter the code": "Please enter the code",
+  "Next": "Next",
+  "Not Received Code?": "Not Received Code?",
+  "Resend": "Resend",
+
+
+
+  "Let's Sign Up":  "Let's Sign Up",
+  "Hey, enter your details to sign up": "Hey, enter your details to sign up",
+  "Name": "Name",
+  "Enter your name": "Enter your name",
+  "Please enter your name": "Please enter your name",
+  "Already have an account?":  "Already have an account?",
+  "Login": "Login",
+
+
+  "Create New Password": "Create New Password",
+  "Create a new password and please never share it with anyone for safe use": "Create a new password and please never share it with anyone for safe use",
+  "Confirm Password": "Confirm Password",
+  "Enter your Password": "Enter your Password",
+  "Enter your Confirm Password": "Enter your Confirm Password",
+  "Please enter your Password": "Please enter your Password",
+  "Please enter your Confirm Password": "Please enter your Confirm Password",
+  "Update Password": "Update Password",
+
+
+  "File Manager": "File Manager",
+  "Groups": "Groups",
+  "create group": "create group",
+  "serch member": "serch member",
+  "cancel": "cancel",
+  "name": "name",
+  "Done": "Done",
+  "Create Group": "Create Group",
+
+
+
+  "booking file": "booking file",
+  "select:": "select:",
+  "booking": "booking",
+
+
+
+
+  "leave_group": "leave_group",
+  "accepte": "accepte",
+  "files": "files",
+  "groupId": "groupId",
+  "groupName": "groupName",
+
+
+
+
+  "book": "book",
+  "file accept": "file accept",
+  "file pending": "file pending",
+  "Upload PDFs": "Upload PDFs",
+  "Files": "Files",
+  "Members": "Members",
+  "Download": "Download",
+
+
+
+  "Reserving": "Reserving",
+  "accept": "accept",
+  "rejected": "rejected",
+  "leave group": "leave group",
+  "Deleted file": "Deleted file",
+
+
+  "'s Group":"'s Group",
+  "is admin":"is admin",
+  "ِAdmin System": "ِAdmin System",
+  "All Groups": "All Groups",
+  "Processed Groups": "Processed Groups",
+  "No groups available": "No groups available",
+  "No processed groups available": "No processed groups available",
+  "Groups": "Groups",
+  "Reserved Files": "Reserved Files",
+"Free Files": "Free Files",
+  "Users's Group": "Users's Group",
+  "s Files": "s Files",
+  "No files available.": "No files available.",
+  "File reservation": "File reservation"
+
+
+
+
+
+
+
+
 }

@@ -31,8 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(56),
             child: AppBar(
-              title: Text('File Manager'),
-              backgroundColor: Colors.deepPurple[600],
+              title: Text('File Manager',style: TextStyle(color: Colors.white),),
+              backgroundColor: Colors.purple[800],
               centerTitle: true,
               elevation: 5.0,
               // Modify shape based on screen size
@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               if (isLargeScreen)
                 Container(
-                  color: Colors.deepPurple[600],
+                  color: Colors.purple[800],
                   width: 250,
                   child: drawerContent,
                 ),
@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple[600],
+                          color: Colors.purple[800],
                           letterSpacing: 1.2,
                         ),
                       ),
@@ -130,12 +130,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.w600,
-                                          color: Colors.deepPurple[600],
+                                          color: Colors.purple[800],
                                         ),
                                       ),
                                       trailing: Icon(
                                         Icons.arrow_forward_ios,
-                                        color: Colors.deepPurple[600],
+                                        color: Colors.purple[800],
                                         size: 20,
                                       ),
                                     ),
@@ -154,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           drawer: isLargeScreen ? null : Drawer(child: drawerContent),
           floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.deepPurple[600],
+            backgroundColor: Colors.purple[800],
             child: Icon(Icons.group_add_rounded,color: Colors.white,),
             onPressed: () {
               _showCreateGroupDialog(context);
@@ -188,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 "Create Group",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.blue[800],  // اللون الأزرق المستخدم
+                  color: Colors.purple[800],  // اللون الأزرق المستخدم
                 ),
               ),
               content: Container(
@@ -201,12 +201,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       controller: searchController,
                       decoration: InputDecoration(
                         labelText: "Search Member",
-                        labelStyle: TextStyle(color: Colors.blue[800]),
-                        prefixIcon: Icon(Icons.search, color: Colors.blue[800]),
+                        labelStyle: TextStyle(color: Colors.purple[800]),
+                        prefixIcon: Icon(Icons.search, color: Colors.purple[800]),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: Colors.blue[800]!,
+                            color: Colors.purple[800]!,
                             width: 1.5,
                           ),
                         ),
@@ -261,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ? Icons.check_circle
                                         : Icons.check_circle_outline,
                                     color: userIds.contains(userId)
-                                        ? Colors.blue[800]
+                                        ? Colors.purple[800]
                                         : Colors.grey,
                                   ),
                                   SizedBox(width: 12),
@@ -290,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   child: Text(
                     "Cancel",
-                    style: TextStyle(color: Colors.blue[800]),
+                    style: TextStyle(color: Colors.purple[800]),
                   ),
                 ),
                 ElevatedButton(
@@ -305,7 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   child: Text("Next",style:TextStyle(color: Colors.white),),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[800],  // اللون الأزرق المستخدم
+                    backgroundColor: Colors.purple[800],  // اللون الأزرق المستخدم
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -393,7 +393,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 "Create Group",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.blue[800], // اللون الأزرق المستخدم
+                  color: Colors.purple[800], // اللون الأزرق المستخدم
                 ),
               ),
               content: Container(
@@ -406,12 +406,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       controller: nameController,
                       decoration: InputDecoration(
                         labelText: "Group Name",
-                        labelStyle: TextStyle(color: Colors.blue[800]),
-                        prefixIcon: Icon(Icons.group, color: Colors.blue[800]),
+                        labelStyle: TextStyle(color: Colors.purple[800]),
+                        prefixIcon: Icon(Icons.group, color: Colors.purple[800]),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                            color: Colors.blue[800]!,
+                            color: Colors.purple[800]!,
                             width: 1.5,
                           ),
                         ),
@@ -428,7 +428,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   child: Text(
                     "Cancel",
-                    style: TextStyle(color: Colors.blue[800]),
+                    style: TextStyle(color: Colors.purple[800]),
                   ),
                 ),
                 ElevatedButton(
@@ -442,7 +442,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   child: Text("Done",style:TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[800],  // اللون الأزرق المستخدم
+                    backgroundColor: Colors.purple[800],  // اللون الأزرق المستخدم
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

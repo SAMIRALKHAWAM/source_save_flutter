@@ -1,13 +1,18 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:source_safe/cubits/admin/cubit.dart';
 import 'package:source_safe/cubits/admin/state.dart';
+import 'package:source_safe/screen/admain/UserDetails.dart';
+
 
 // واجهة تعرض المجموعات الخاصة بالمستخدم
 class GroupsUserPage extends StatefulWidget {
   final dynamic userId; // معرف المستخدم الذي ستعرض له المجموعات
 
-  GroupsUserPage({required this.userId});
+  final dynamic userName; // معرف المستخدم الذي ستعرض له المجموعات
+
+  GroupsUserPage({required this.userId,required this.userName});
 
   @override
   _GroupsUserPageState createState() => _GroupsUserPageState();
@@ -30,7 +35,7 @@ class _GroupsUserPageState extends State<GroupsUserPage> {
           var groups = adminCubit.get(context).getgroupsuser!.data;
           return Scaffold(
             appBar: AppBar(
-              title: Text("Users's Group"),
+              title: Text("${widget.userName}'s Group".tr()),
               backgroundColor: Colors.purple[800],
               centerTitle: true,
               elevation: 5.0,
@@ -52,23 +57,39 @@ class _GroupsUserPageState extends State<GroupsUserPage> {
                     child: ListView.builder(
                       itemCount: groups.length,
                       itemBuilder: (context, index) {
-                        return Card(
-                          elevation: 6,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: ListTile(
-                            title: Text(
-                              groups[index].name,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
+                        return GestureDetector(
+
+                          onTap: (){
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => UserDetailPage(
+                                    groupeId: groups[index].id,
+                                    userId: widget.userId,
+                                    userName: widget.userName,
+                                  )),
+                            );
+
+
+                          },
+                          child: Card(
+                            elevation: 6,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            subtitle:
-                            Text(groups[index].isAdmin?"is admin":"",style: TextStyle(textBaseline: TextBaseline.ideographic),)
+                            child: ListTile(
+                              title: Text(
+                                groups[index].name,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              subtitle:
+                              Text(groups[index].isAdmin?"is admin".tr():"",style: TextStyle(textBaseline: TextBaseline.ideographic),)
 
 
+                            ),
                           ),
                         );
                       },

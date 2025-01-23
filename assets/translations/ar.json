@@ -1,5 +1,127 @@
 {
-  "File": "ملف",
-  "Unlock without file upload": "فتح بدون رفع الملف",
-  "Unlock with file upload": "فتح مع رفع الملف"
+  "Menu": "القائمة",
+  "Home": "الرئيسية",
+  "Change Language": "تغيير",
+  "theme": "الوضع",
+  "Logout": "تسجيل الخروج",
+  "Are you sure you want to logout?": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+  "Cancel": "إلغاء",
+  "Log out": "تسجيل الخروج",
+  "Confirmation": "تأكيد",
+  "lets sign in": "تسجيل الدخول",
+  "Hey, enter your details to sign in to your account.": "مرحبًا، أدخل بياناتك لتسجيل الدخول إلى حسابك.",
+  "Email": "البريد الإلكتروني",
+  "Enter your email": "أدخل بريدك الإلكتروني",
+  "Please enter your email": "يرجى إدخال بريدك الإلكتروني",
+  "Please enter a valid email address": "يرجى إدخال بريد إلكتروني صالح",
+  "Password": "كلمة المرور",
+  "Enter your password": "أدخل كلمة المرور",
+  "Please enter your password": "يرجى إدخال كلمة المرور",
+  "Password must be at least 6 characters long": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+  "Forget Password?": "نسيت كلمة المرور؟",
+  "sign in": "تسجيل الدخول",
+  "Form is valid": "النموذج صالح",
+  "Form is not valid": "النموذج غير صالح",
+  "Don't have an account? ": "ليس لديك حساب؟",
+  "Sign Up": "سجل الآن",
+  "Booking Files": "حجز الملفات",
+  "Select:": "اختر:",
+  "Booking": "حجز",
+  "No files selected": "لم يتم اختيار أي ملفات",
+
+
+  "Find Your Account": "اعثر على حسابك",
+  "Please enter your email address to recover your account. We will send you instructions to reset your password.": "يرجى إدخال عنوان بريدك الإلكتروني لاسترداد حسابك. سنرسل لك تعليمات لإعادة تعيين كلمة المرور الخاصة بك.",
+  "Your Email": "بريدك الإلكتروني",
+  "Submit": "إرسال",
+
+
+  "Enter the Code": "أدخل الرمز",
+  "Please enter the code sent to": "يرجى إدخال الرمز المرسل إلى",
+  "Code": "الرمز",
+  "Enter your code": "أدخل الرمز الخاص بك",
+  "Please enter the code": "يرجى إدخال الرمز",
+  "Next": "التالي",
+  "Not Received Code?": "لم تستلم الرمز؟",
+  "Resend": "إعادة الإرسال",
+
+
+
+  "Let's Sign Up": "هيا نسجل",
+  "Hey, enter your details to sign up": "مرحبًا، أدخل بياناتك للتسجيل.",
+  "Name": "الاسم",
+  "Enter your name": "أدخل اسمك",
+  "Please enter your name": "يرجى إدخال اسمك",
+  "Already have an account?": "لديك حساب بالفعل؟",
+  "Login": "تسجيل الدخول",
+
+
+
+  "Create New Password": "إنشاء كلمة مرور جديدة",
+  "Create a new password and please never share it with anyone for safe use": "قم بإنشاء كلمة مرور جديدة، ويرجى عدم مشاركتها مع أي شخص لاستخدام آمن",
+  "Confirm Password": "تأكيد كلمة المرور",
+  "Enter your Password": "أدخل كلمة المرور",
+  "Enter your Confirm Password": "أدخل تأكيد كلمة المرور",
+  "Please enter your Password": "يرجى إدخال كلمة المرور",
+  "Please enter your Confirm Password": "يرجى إدخال تأكيد كلمة المرور",
+  "Update Password": "تحديث كلمة المرور",
+
+
+  "File Manager": "إدارة الملفات",
+  "Groups": "المجموعات",
+  "create group": "إنشاء مجموعة",
+  "serch member": "بحث عن عضو",
+  "cancel": "إلغاء",
+  "name": "الاسم",
+  "Done": "تم",
+  "Create Group": "إنشاء مجموعة",
+
+
+  "booking file": "حجز الملف",
+  "select:": "اختر:",
+  "booking": "حجز",
+
+
+  "leave_group": "مغادرة المجموعة",
+  "accepte": "تم القبول",
+  "files": "الملفات",
+  "groupId": "معرف المجموعة",
+  "groupName": "اسم المجموعة",
+
+  "book": "حجز",
+  "file accept": "قبول الملف",
+  "file pending": "الملف معلق",
+  "Upload PDFs": "تحميل ملفات PDF",
+  "Files": "الملفات",
+  "Members": "الأعضاء",
+  "Download": "تحميل",
+
+
+  "Reserving": "حجز",
+  "accept": "قبول",
+  "rejected": "مرفوض",
+  "leave group": "مغادرة المجموعة",
+  "Deleted file": "تم حذف الملف",
+
+"'s Group": "المجموعات ",
+  "is admin": "أدمن الغروب ",
+  "ِAdmin System": "أدمن التطبيق",
+  "All Groups": "كل الملفات",
+"Processed Groups":"معالجة المجموعات ",
+  "No groups available": "لا يوجد مجموعات",
+  "No processed groups available": "لا يوجد اي غروبات للمعالجة",
+  "Groups": "المجموعات",
+  "Users": "المسنخدمين",
+  "Free Files": "الملفات المرفوعة",
+  "Reserved Files":"الملفات المحجوزة",
+  "Users's Group": "المجموعات الخاصة ب",
+  "s Files": "الملفات",
+  "No files available.": "لايوجد ملفات ",
+  "File reservation": "حجز ملفات "
+
+
+
+
+
+
 }

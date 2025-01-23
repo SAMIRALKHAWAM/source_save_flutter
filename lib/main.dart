@@ -10,7 +10,9 @@ import 'package:source_safe/screen/app/12.dart';
 import 'package:source_safe/screen/app/HomeScreen.dart';
 import 'package:source_safe/screen/regester/login.dart';
 
+import 'config/theme_manager.dart';
 import 'cubits/regester/cubit.dart';
+import 'cubits/theme/theme_cubit.dart';
 import 'network/bloc_observer.dart';
 import 'network/cash_helper.dart';
 import 'network/dio_helper.dart';
@@ -126,24 +128,63 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (BuildContext context) =>registerCubit()),
         BlocProvider(create: (BuildContext context) =>AppCubit()),
         BlocProvider(create: (BuildContext context) =>adminCubit()),
+        BlocProvider(create: (BuildContext context) =>ThemeCubit()..getTheme()),
+
 
 
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'file App',
-        theme: ThemeData(
-      
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        localizationsDelegates: context.localizationDelegates,
-        supportedLocales: context.supportedLocales,
-        locale: context.locale,
 
-        home:startwidget,
-      ),
-    );
+
+     child: BlocBuilder<ThemeCubit, ThemeState>(
+     // بناء الثيم عبر BlocBuilder
+     builder: (context, state) {
+     ThemeData themeData = ThemeManager.lightTheme; // الثيم الافتراضي
+
+     if (state is ThemeChanged) {
+     themeData = state.themeData; // الحصول على الثيم الذي تم تغييره
+     }
+
+     return MaterialApp(
+     debugShowCheckedModeBanner: false,
+     title: 'file App',
+     theme: themeData, // تطبيق الثيم المتغير
+     home: startwidget, // استخدام الـ startwidget المحدد
+     localizationsDelegates: context.localizationDelegates,
+     supportedLocales: context.supportedLocales,
+     locale: context.locale,
+     );
+     },
+
+
+
+      // child: BlocConsumer<ThemeCubit, ThemeState>(
+      //   listener: (BuildContext context, Object? state) {  },
+      //
+      //   builder: (BuildContext context, state) {
+      //
+      //     if (state is ThemeChanged) {
+      //       themeData = state.themeData; // الحصول على الثيم الذي تم تغييره
+      //     }
+      //
+      //
+      //     return  MaterialApp(
+      //       debugShowCheckedModeBanner: false,
+      //       title: 'file App',
+      //       theme: ThemeData(
+      //
+      //         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      //         useMaterial3: true,
+      //       ),
+      //       localizationsDelegates: context.localizationDelegates,
+      //       supportedLocales: context.supportedLocales,
+      //       locale: context.locale,
+      //
+      //       home:startwidget,
+      //     );
+      //   },
+      //
+      // ),
+     ));
   }
 }
 

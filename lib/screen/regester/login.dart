@@ -92,7 +92,7 @@ class _LoginState extends State<Login> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 30,
-                          color: Colors.blue[800],
+                          color: Colors.purple[800],
                         ),
                       ),
                       SizedBox(height: 10),
@@ -181,7 +181,7 @@ class _LoginState extends State<Login> {
                             "Forget Password?",
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.blue[800],
+                              color: Colors.purple[800],
                             ),
                           ),
                         ),
@@ -213,7 +213,7 @@ class _LoginState extends State<Login> {
                             style: TextStyle(fontSize: 18, color: Colors.white),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[800],
+                            backgroundColor: Colors.purple[800],
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
@@ -249,7 +249,7 @@ class _LoginState extends State<Login> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.blue[800],
+                                color: Colors.purple[800],
                               ),
                             ),
                           ),

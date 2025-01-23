@@ -39,5 +39,12 @@ class SerchState extends AppSates {}
 class SerchSuccessState extends AppSates {
   final List<DataUser> results;
   SerchSuccessState(this.results);
-
 }
+
+
+class logSuccessState extends AppSates{}
+class logErrorState extends AppSates{}
+
+
+class differentSuccessState extends AppSates{}
+class differentErrorState extends AppSates{}

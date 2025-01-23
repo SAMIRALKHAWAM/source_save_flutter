@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,27 +40,38 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
   Future<void> pickFiles(BuildContext context) async {
     try {
       final result = await FilePicker.platform.pickFiles(
-          allowMultiple: true,
-          type: FileType.custom,
-          allowedExtensions: [
-            'pdf',
-            'CSV',
-            "txt",
-          ]);
+        allowMultiple: true,
+        type: FileType.custom,
+        allowedExtensions: [
+          'pdf',
+          'CSV',
+          "txt",
+        ],
+      );
 
       if (result != null) {
         for (var file in result.files) {
           if (file.bytes != null) {
-            final fileName = file.name;
+            final originalFileName = file.name;
             final bytes = file.bytes!;
 
-            AppCubit.get(context).add_file(
-                fileName: fileName, fileBytes: bytes, id: widget.groupId);
-            AppCubit.get(context).get_file_pe(id_group: widget.groupId);
+            // اطلب من المستخدم تغيير اسم الملف
+            final newFileName = await _showRenameFileDialog(context, originalFileName);
 
-            select = "accepte";
-            print('File selected: $fileName');
-            print(file.size);
+            if (newFileName != null && newFileName.isNotEmpty) {
+              AppCubit.get(context).add_file(
+                fileName: newFileName,
+                fileBytes: bytes,
+                id: widget.groupId,
+              );
+              AppCubit.get(context).get_file_pe(id_group: widget.groupId);
+
+              select = "accepte";
+              print('File selected: $newFileName');
+              print(file.size);
+            } else {
+              print('File upload canceled or invalid name');
+            }
           }
         }
       }
@@ -70,58 +82,73 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
     }
   }
 
+// دالة لعرض مربع الحوار لإعادة تسمية الملف
+  Future<String?> _showRenameFileDialog(BuildContext context, String originalName) async {
+    final TextEditingController nameController = TextEditingController(text: originalName);
 
+    return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Rename File'),
+          content: TextField(
+            controller: nameController,
+            decoration: InputDecoration(
+              labelText: 'Enter new file name',
+              hintText: 'e.g., my_file.pdf',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // إلغاء الحوار
+              },
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(nameController.text.trim()); // إرجاع الاسم الجديد
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-  Future<void> downloadFile(String url, String savePath) async {
+  void downloadFile(String url, String fileName) async {
     try {
-      // إرسال طلب GET لتحميل الملف
-      final response = await http.get(Uri.parse(url));
+      final request = html.HttpRequest();
+      request.open('GET', url);
+      request.responseType = 'blob';  // تحديد نوع الاستجابة كـ Blob
 
-      // التحقق إذا كان الطلب ناجحاً
-      if (response.statusCode == 200) {
-        // فتح الملف وكتابته في المسار المحدد
-        final file = File(savePath);
-        await file.writeAsBytes(response.bodyBytes);
-        print('تم تنزيل الملف بنجاح');
-      } else {
-        print('فشل تنزيل الملف: ${response.statusCode}');
-      }
+      request.onLoadEnd.listen((e) {
+        if (request.status == 200) {
+
+          final blob = request.response;
+          final urlBlob = html.Url.createObjectUrlFromBlob(blob);
+
+          final anchor = html.AnchorElement(href: urlBlob)
+            ..download = fileName  // تحديد اسم الملف عند التحميل
+            ..click();  // محاكاة النقر على الرابط لتحميل الملف
+
+          // تنظيف بعد التحميل
+          html.Url.revokeObjectUrl(urlBlob);
+        } else {
+          print('حدث خطأ في تحميل الملف: ${request.status}');
+        }
+      });
+
+      // إرسال الطلب
+      request.send();
     } catch (e) {
-      print('حدث خطأ: $e');
+      print('حدث خطأ أثناء تحميل الملف: $e');
     }
   }
 
 
-// دالة لتحميل الملف مباشرة
 
-  // void _downloadFile(String url) async {
-  //   try {
-  //     // إجراء طلب fetch
-  //     final response = await html.window.fetch("https://cors-anywhere.herokuapp.com/"+url);
-  //
-  //     // تحقق من وجود استجابة صحيحة
-  //     if (response != null && response.status == 200) {
-  //       // إذا كانت الاستجابة ناجحة، قم بتحويلها إلى blob
-  //       final blob = await response.blob();
-  //       final urlBlob = html.Url.createObjectUrlFromBlob(blob);
-  //
-  //       // إنشاء رابط لتحميل الملف
-  //       final anchor = html.AnchorElement(href: urlBlob)
-  //         ..target = 'none'
-  //         ..download = url.split('/').last;
-  //
-  //       // محاكاة النقر على الرابط لتنزيل الملف
-  //       anchor.click();
-  //
-  //       // تنظيف الـ Blob بعد التنزيل
-  //       html.Url.revokeObjectUrl(urlBlob);
-  //     } else {
-  //       print('فشل في تحميل الملف، حالة الاستجابة: ${response.status}');
-  //     }
-  //   } catch (e) {
-  //     print('حدث خطأ أثناء محاولة تنزيل الملف: $e');
-  //   }
-  // }
 
   @override
   void initState() {
@@ -142,6 +169,10 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
       f_r: "reserved",
       groupeId: widget.groupId,
     );
+    AppCubit.get(context).getdifferent(widget.groupId,  id);
+
+
+
   }
 
   @override
@@ -166,41 +197,10 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                     ),
                     actions: [
                       if (!widget.isAdmin)
-                        // PopupMenuButton<String>(
-                        //   icon: Icon(Icons.more_vert_rounded,
-                        //       color: Colors.white),
-                        //   onSelected: (value) {
-                        //     if (value == 'leave_group') {
-                        //       AppCubit.get(context)
-                        //           .leave_group(groupId: widget.groupId);
-                        //       Navigator.pushReplacement(
-                        //         context,
-                        //         MaterialPageRoute(
-                        //             builder: (context) => HomeScreen()),
-                        //       );
-                        //     } else if (value == 'book') {
-                        //       Navigator.push(
-                        //         context,
-                        //         MaterialPageRoute(
-                        //             builder: (context) =>
-                        //                 Book(group_id: widget.groupId)),
-                        //       );
-                        //     }
-                        //   },
-                        //   itemBuilder: (context) => [
-                        //     PopupMenuItem<String>(
-                        //       child: Text('Leave Group'),
-                        //       value: 'leave_group',
-                        //     ),
-                        //     PopupMenuItem<String>(
-                        //       child: Text('Book Files'),
-                        //       value: 'book',
-                        //     ),
-                        //   ],
-                        // )
+
 
                       Tooltip(
-                        message: "Exit group",
+                        message: "Exit group".tr(),
                         child: IconButton(
                           icon: Icon(Icons.output_sharp,
                               color: Colors.purple[800]),
@@ -219,6 +219,11 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                         Tab(text: 'Members'),
                         Tab(text: 'My Files'),
                       ],
+
+                        indicatorColor: Colors.white, // تغير لون المؤشر ليكون أبيض
+                        labelColor: Colors.white, // تغيير لون النص في التاب النشط إلى الأبيض
+                        unselectedLabelColor: Colors.grey
+
                     ),
                   ),
                   floatingActionButton: FloatingActionButton(
@@ -260,7 +265,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                           BorderSide(
                                               color: Colors.purple[300]!)),
                                     ),
-                                    child: Text('File Accept'),
+                                    child: Text('File Accept'.tr()),
                                   ),
                                   SizedBox(width: screenWidth / 25),
                                   ElevatedButton(
@@ -285,7 +290,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                           BorderSide(
                                               color: Colors.purple[300]!)),
                                     ),
-                                    child: Text('File Pending'),
+                                    child: Text('File Pending'.tr()),
                                   ),
                                   SizedBox(width: screenWidth / 25),
                                   ElevatedButton(
@@ -298,7 +303,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                       backgroundColor:
                                           MaterialStateProperty.all(
                                         select == "booking"
-                                            ? Colors.purple[600]
+                                            ? Colors.purple[300]
                                             : Colors.white,
                                       ),
                                       foregroundColor:
@@ -308,7 +313,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                           BorderSide(
                                               color: Colors.purple[300]!)),
                                     ),
-                                    child: Text('Booking'),
+                                    child: Text('Booking'.tr()),
                                   ),
                                 ],
                               )
@@ -336,7 +341,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                           BorderSide(
                                               color: Colors.purple[300]!)),
                                     ),
-                                    child: Text('All Files'),
+                                    child: Text('All Files'.tr()),
                                   ),
                                   SizedBox(width: screenWidth / 25),
                                   ElevatedButton(
@@ -349,7 +354,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                       backgroundColor:
                                           MaterialStateProperty.all(
                                         select == "booking"
-                                            ? Colors.purple[800]
+                                            ? Colors.purple[300]
                                             : Colors.white,
                                       ),
                                       foregroundColor:
@@ -359,7 +364,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                           BorderSide(
                                               color: Colors.purple[300]!)),
                                     ),
-                                    child: Text('Booking Files'),
+                                    child: Text('Booking Files'.tr()),
                                   ),
                                 ],
                               ),
@@ -429,7 +434,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                                           color: Colors.purple),
                                                       onPressed: () {
                                                         final fileUrl =
-                                                            "http://127.0.0.1:8000" +
+                                                            "http://192.168.100.1:8000" +
                                                                 AppCubit.get(
                                                                         context)
                                                                     .get_file!
@@ -441,9 +446,9 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                                                 .get_file!
                                                                 .data[index]
                                                                 .name;
-                                                        downloadFile();
-                                                      },
-                                                    ),
+        final anchor = html.AnchorElement(href: fileUrl)
+        ..download = fileName  // تحديد اسم الملف عند التحميل
+        ..click();                                                         }),
                                                     IconButton(
                                                       icon: Icon(Icons.bookmark,
                                                           color: Colors.purple),
@@ -492,7 +497,10 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                         padding: const EdgeInsets.all(16.0),
                         child: AppCubit.get(context)
                                     .get_file_user_ingroup_reserved !=
-                                null
+                            null&&AppCubit.get(context)
+                            .differentModel !=
+                            null
+
                             ? ListView(
                                 children: [
                                   SizedBox(height: 20),
@@ -508,6 +516,8 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                         .get_file_user_ingroup_free,
                                     "free",
                                   ),
+                                  _buildExpansionTileD('update Files', AppCubit.get(context).differentModel, "free"),
+
                                 ],
                               )
                             : Center(child: CircularProgressIndicator()),
@@ -566,7 +576,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                 AppCubit.get(context).get_file_accepted(
                                     id_group: widget.groupId);
                               },
-                              child: Text("accept"),
+                              child: Text("accept".tr()),
                             ),
                             SizedBox(width: 5),
                             TextButton(
@@ -581,7 +591,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                 AppCubit.get(context)
                                     .get_file_pe(id_group: widget.groupId);
                               },
-                              child: Text("rejected"),
+                              child: Text("rejected".tr()),
                             ),
                           ],
                         ),
@@ -634,7 +644,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: Colors.blueAccent.shade700,
+                      color: Colors.purple.shade700,
                     ),
                   ),
                   leading: CircleAvatar(
@@ -645,7 +655,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                           .userName[0],
                       style: TextStyle(color: Colors.white),
                     ),
-                    backgroundColor: Colors.blueAccent,
+                    backgroundColor: Colors.purple,
                   ),
                 ),
               ),
@@ -666,32 +676,39 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       color: Colors.blue.shade50,
       child: ExpansionTile(
-        iconColor: Colors.blue.shade700,
+        iconColor: Colors.purple.shade700,
         title: Text(
           title,
           style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
-              color: Colors.blue.shade700),
+              color: Colors.purple.shade700),
         ),
         children: files.isEmpty
             ? [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'No files available.',
+                    'No files available.'.tr(),
                     style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
                   ),
                 ),
               ]
             : files.map<Widget>((file) {
                 return ListTile(
-                  title: Text(file.name ?? '',
-                      style: TextStyle(fontSize: 16, color: Colors.black87)),
-                  trailing: Icon(Icons.file_download, color: Colors.blue),
+                  title: Tooltip(
+                    message: 'You can cancel the reservation'.tr(),
+                    child: Text(file.name ?? '',
+                        style: TextStyle(fontSize: 16, color: Colors.black87)),
+                  ),
+
+
+
                   onTap: () {
-                    // عند النقر على الملف، نعرض مربع الحوار مع الخيارات
-                    _showFileOptionsDialog(context, file);
+                    status=="free"?
+                    null:
+
+                        _showFileOptionsDialog(context, file);
                   },
                 );
               }).toList(),
@@ -699,7 +716,49 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
     );
   }
 
-// دالة لعرض مربع الحوار مع الخيارين
+  Widget _buildExpansionTileD(String title, dynamic fileList, String status) {
+
+
+    // استخراج البيانات من الملف إذا كانت موجودة
+    List<dynamic> files = fileList.data ?? [];  // التأكد من أن data موجودة
+
+    return Card(
+      elevation: 8,
+      margin: EdgeInsets.symmetric(vertical: 10),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      color: Colors.blue.shade50,
+      child: ExpansionTile(
+        iconColor: Colors.purple.shade700,
+        title: Text(
+          title,
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.purple.shade700),
+        ),
+        children: files.isEmpty
+            ? [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'No files available.'.tr(),
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+            ),
+          ),
+        ]
+            : files.map<Widget>((file) {
+          return Column(
+            children: [
+              ListTile(
+                title: Text(file.diff ?? '', style: TextStyle(fontSize: 16, color: Colors.black87)),
+                // إضافة التفاصيل إذا لزم الأمر
+              ),
+              Divider(), // سطر فاصل بين العناصر
+            ],
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+
   void _showFileOptionsDialog(BuildContext context, dynamic file) {
     final screenWidth = MediaQuery.of(context).size.width;
 
