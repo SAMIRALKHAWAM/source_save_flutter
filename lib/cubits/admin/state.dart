@@ -11,4 +11,5 @@ class get_groupsErrorState extends adminSates{}
 class userSuccessState extends adminSates{}
 class userErrorState extends adminSates{}
 
-
+class changeSuccessState extends adminSates{}
+class changeErrorState extends adminSates{}

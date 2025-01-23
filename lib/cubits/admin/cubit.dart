@@ -27,21 +27,13 @@ class adminCubit extends Cubit<adminSates> {
       get_group = GetGroupAdminModel.fromJson(value.data);
 
       emit(get_groupsSuccessState());
-      print(value.data);
+      // print(value.data);
     }).catchError((error) {
       if (error is DioException) {
-        // الطباعة بطريقة مفصلة
         print('Dio error type: ${error.type}');
-        if (error.response != null) {
-          print('Dio error response: ${error.response}');
-        } else {
-          print('No response data');
-        }
-        print('Dio error message: ${error.message}');
-      } else {
-        // في حال كان هناك نوع آخر من الأخطاء
-        print('Error: $error');
+        print('Dio error message: ${error.response}');
       }
+
 
       print(error.toString());
       emit(get_groupsErrorState());
@@ -57,29 +49,21 @@ class adminCubit extends Cubit<adminSates> {
     DioHelper.getData(
       url: baseurladmain + "/get_groups?status=pending",
     ).then((value) {
-      get_group = GetGroupAdminModel.fromJson(value.data);
+      get_group_p = GetGroupAdminModel.fromJson(value.data);
 
       emit(get_groupsSuccessState());
-      print(value.data);
+      // print(value.data);
     }).catchError((error) {
       if (error is DioException) {
-        // الطباعة بطريقة مفصلة
         print('Dio error type: ${error.type}');
-        if (error.response != null) {
-          print('Dio error response: ${error.response}');
-        } else {
-          print('No response data');
-        }
-        print('Dio error message: ${error.message}');
-      } else {
-        // في حال كان هناك نوع آخر من الأخطاء
-        print('Error: $error');
+        print('Dio error message: ${error.response}');
       }
 
       print(error.toString());
       emit(get_groupsErrorState());
     });
   }
+
 
 
   ///////////////////////Get Users
@@ -90,8 +74,8 @@ class adminCubit extends Cubit<adminSates> {
     DioHelper.getData(
       url: baseurladmain + get_users,
     ).then((value) {
+      getUser = GetUser.fromJson(value.data);
       emit(userSuccessState());
-
     }).catchError((error) {
       print(error.toString());
       emit(userErrorState());
@@ -101,7 +85,7 @@ class adminCubit extends Cubit<adminSates> {
 
   ///////////////////////Get Users group
   GetUserGroup? getUsergroup;
-  void get_group_users({
+  void get_users_group({
     required id,
 
   }) {
@@ -112,16 +96,49 @@ class adminCubit extends Cubit<adminSates> {
     ).then((value) {
       emit(userSuccessState());
       getUsergroup = GetUserGroup.fromJson(value.data);
-
-
-
-
+      print(value.data);
     }).catchError((error) {
       print(error.toString());
       emit(userErrorState());
     });
   }
 
+  ///////////////////////Get  groups Users
+  GetGroupAdminModel? getgroupsuser;
+  void get_groups_user({
+    required id,
+
+  }) {
+
+    emit(LoadingState());
+    DioHelper.getData(
+      url: baseurladmain +"/get_user_groups?userId=$id",
+    ).then((value) {
+      emit(get_groupsSuccessState());
+      getgroupsuser = GetGroupAdminModel.fromJson(value.data);
+      print(value.data);
+    }).catchError((error) {
+      print(error.toString());
+      emit(get_groupsErrorState());
+    });
+  }
+
+
+  ////////////////////////////
+  void change_status({
+    required status,
+    required groupId,
+  }) {
+    emit(LoadingState());
+    DioHelper.postData(url: baseurladmain + "/change_group_status?groupId=$groupId", data: {
+      'status': status,
+    }).then((value) {
+      emit(changeSuccessState());
+    }).catchError((error) {
+      print(error.toString());
+      emit(changeErrorState());
+    });
+  }
 
 
 

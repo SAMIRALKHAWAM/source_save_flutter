@@ -35,10 +35,12 @@ class _LoginState extends State<Login> {
 
           CachHelper.saveData(key: "token", value: registerCubit.get(context).loginmodel.data.token.toString());
           CachHelper.saveData(key: "id", value: registerCubit.get(context).loginmodel.data.id.toString());
+          CachHelper.saveData(key: "role", value: registerCubit.get(context).loginmodel.data.role.toString());
 
           token=CachHelper.getData(key: "token");
           id=CachHelper.getData(key: "id");
-          registerCubit.get(context).loginmodel.data.role=="admin"?
+          role=CachHelper.getData(key: "role");
+        role=="admin"?
           Navigator.push(
             context,
             MaterialPageRoute(

@@ -10,14 +10,14 @@ class Drawer_App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.deepPurple[700],  // اللون المتناسق مع AppBar
+      color: Colors.purple[800],  // اللون المتناسق مع AppBar
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           // Header of the Drawer
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.deepPurple[600],  // نفس اللون كـ AppBar
+              color: Colors.purple[800],  // نفس اللون كـ AppBar
               borderRadius: BorderRadius.only(
                 bottomRight: Radius.circular(30),
                 bottomLeft: Radius.circular(30),
@@ -31,7 +31,7 @@ class Drawer_App extends StatelessWidget {
                   backgroundColor: Colors.white,
                   child: Icon(
                     Icons.account_circle,
-                    color: Colors.deepPurple[600],
+                    color: Colors.purple[800],
                     size: 40,
                   ),
                 ),

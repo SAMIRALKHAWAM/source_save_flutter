@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:source_safe/cubits/admin/cubit.dart';
 import 'package:source_safe/cubits/app/cubit.dart';
+import 'package:source_safe/screen/admain/homescreen.dart';
 import 'package:source_safe/screen/app/12.dart';
 import 'package:source_safe/screen/app/HomeScreen.dart';
 import 'package:source_safe/screen/regester/login.dart';
@@ -79,15 +80,26 @@ void main() async{
 /////////
 
 
+
+
   await EasyLocalization.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer=MyBlocObserver();
   DioHelper.init();
   await CachHelper.init();
   token=CachHelper.getData(key: "token");
+  role=CachHelper.getData(key: "role");
+
   id=CachHelper.getData(key: "id");
   print(token);
-  token !=null?startwidget=HomeScreen():startwidget=Login();
+  token !=null?
+  role=="admin"?
+
+  startwidget=AdminHomeScreen()
+      :  startwidget=HomeScreen()
+
+
+      :startwidget=Login();
   runApp(
 
       EasyLocalization(

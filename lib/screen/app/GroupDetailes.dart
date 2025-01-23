@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
@@ -8,6 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:source_safe/network/dio_helper.dart';
 import 'package:source_safe/network/end_point.dart';
 import 'dart:html' as html;
+import 'package:http/http.dart' as http;
+
 
 import '../../cubits/app/cubit.dart';
 import '../../cubits/app/state.dart';
@@ -67,74 +70,27 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
     }
   }
 
-  void downloadFile(String url) {
-    html.HttpRequest.request(url, method: 'GET', responseType: 'blob')
-        .then((response) {
-      final blob = response.response;
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      final anchor = html.AnchorElement(href: url)
-        ..target = 'blank'
-        ..setAttribute('download', 'file.pdf') // اسم الملف والامتداد الصحيح
-        ..click();
-      html.Url.revokeObjectUrl(url); // تنظيف URL
-    }).catchError((e) {
-      print('Error fetching file: $e');
-    });
-  }
 
-  // void download(
-  //     List<int> bytes, {
-  //       String downloadName,
-  //     }) {
-  //   // Encode our file in base64
-  //   final _base64 = base64Encode(bytes);
-  //   // Create the link with the file
-  //   final anchor =
-  //   AnchorElement(href: 'data:application/octet-stream;base64,$_base64')
-  //     ..target = 'blank';
-  //   // add the name
-  //   if (downloadName != null) {
-  //     anchor.download = downloadName;
-  //   }
-  //   // trigger download
-  //   document.body.append(anchor);
-  //   anchor.click();
-  //   anchor.remove();
-  //   return;
-  // }
-  static late Dio dio;
 
-  void _downloadFile(String url) async {
-    dio = Dio();
+  Future<void> downloadFile(String url, String savePath) async {
     try {
-      // إجراء طلب fetch
-      final response = await dio.get(
-          "https://cors-anywhere.herokuapp.com/" + url,
-          options: Options(responseType: ResponseType.stream));
+      // إرسال طلب GET لتحميل الملف
+      final response = await http.get(Uri.parse(url));
 
-      // تحقق من وجود استجابة صحيحة
-      if (response != null && response.statusMessage == 200) {
-        // إذا كانت الاستجابة ناجحة، قم بتحويلها إلى blob
-        final blob = await response.data.stream();
-        final urlBlob = html.Url.createObjectUrlFromBlob(blob);
-
-        // إنشاء رابط لتحميل الملف
-        final anchor = html.AnchorElement(href: urlBlob)
-          ..target = 'none'
-          ..download = url.split('/').last;
-
-        // محاكاة النقر على الرابط لتنزيل الملف
-        anchor.click();
-
-        // تنظيف الـ Blob بعد التنزيل
-        html.Url.revokeObjectUrl(urlBlob);
+      // التحقق إذا كان الطلب ناجحاً
+      if (response.statusCode == 200) {
+        // فتح الملف وكتابته في المسار المحدد
+        final file = File(savePath);
+        await file.writeAsBytes(response.bodyBytes);
+        print('تم تنزيل الملف بنجاح');
       } else {
-        print('فشل في تحميل الملف، حالة الاستجابة: ${response.statusMessage}');
+        print('فشل تنزيل الملف: ${response.statusCode}');
       }
     } catch (e) {
-      print('حدث خطأ أثناء محاولة تنزيل الملف: $e');
+      print('حدث خطأ: $e');
     }
   }
+
 
 // دالة لتحميل الملف مباشرة
 
@@ -210,40 +166,50 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                     ),
                     actions: [
                       if (!widget.isAdmin)
-                        PopupMenuButton<String>(
-                          icon: Icon(Icons.more_vert_rounded,
-                              color: Colors.white),
-                          onSelected: (value) {
-                            if (value == 'leave_group') {
-                              AppCubit.get(context)
-                                  .leave_group(groupId: widget.groupId);
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => HomeScreen()),
-                              );
-                            } else if (value == 'book') {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        Book(group_id: widget.groupId)),
-                              );
-                            }
+                        // PopupMenuButton<String>(
+                        //   icon: Icon(Icons.more_vert_rounded,
+                        //       color: Colors.white),
+                        //   onSelected: (value) {
+                        //     if (value == 'leave_group') {
+                        //       AppCubit.get(context)
+                        //           .leave_group(groupId: widget.groupId);
+                        //       Navigator.pushReplacement(
+                        //         context,
+                        //         MaterialPageRoute(
+                        //             builder: (context) => HomeScreen()),
+                        //       );
+                        //     } else if (value == 'book') {
+                        //       Navigator.push(
+                        //         context,
+                        //         MaterialPageRoute(
+                        //             builder: (context) =>
+                        //                 Book(group_id: widget.groupId)),
+                        //       );
+                        //     }
+                        //   },
+                        //   itemBuilder: (context) => [
+                        //     PopupMenuItem<String>(
+                        //       child: Text('Leave Group'),
+                        //       value: 'leave_group',
+                        //     ),
+                        //     PopupMenuItem<String>(
+                        //       child: Text('Book Files'),
+                        //       value: 'book',
+                        //     ),
+                        //   ],
+                        // )
+
+                      Tooltip(
+                        message: "Exit group",
+                        child: IconButton(
+                          icon: Icon(Icons.output_sharp,
+                              color: Colors.purple[800]),
+                          onPressed: () {
+
                           },
-                          itemBuilder: (context) => [
-                            PopupMenuItem<String>(
-                              child: Text('Leave Group'),
-                              value: 'leave_group',
-                            ),
-                            PopupMenuItem<String>(
-                              child: Text('Book Files'),
-                              value: 'book',
-                            ),
-                          ],
                         ),
-                    ],
-                    backgroundColor: Colors.deepPurple, // اللون البنفسجي الداكن
+                      ),                    ],
+                    backgroundColor: Colors.purple[800], // اللون البنفسجي الداكن
                     centerTitle: true,
                     bottom: TabBar(
                       // indicatorColor: Colors.white,
@@ -475,14 +441,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                                                 .get_file!
                                                                 .data[index]
                                                                 .name;
-                                                        final html.AnchorElement
-                                                            anchor =
-                                                            html.AnchorElement(
-                                                                href: fileUrl)
-                                                              ..target = 'blank'
-                                                              ..download =
-                                                                  fileName;
-                                                        anchor.click();
+                                                        downloadFile();
                                                       },
                                                     ),
                                                     IconButton(
